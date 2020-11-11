@@ -33,7 +33,10 @@ gen_gl_preobj <- function(vcf, oct_libs = c(), tet_libs = c(),
   tet_alt_dose_vec <- c('0', '1', '1', '1', '2')
   #
   if(length(oct_libs) > 0){
-    oct_df <- vcf[, oct_libs]
+    oct_df_tmp <- vcf[, oct_libs]
+    oct_df <- data.frame(apply(oct_df_tmp, 2, function(y) 
+      unlist(lapply(strsplit(y, split = ':'), function(x) x[1]))), 
+      stringsAsFactors = F)
     oct_df[oct_df == './.'] <- NA
     for(i in seq(length(geno_vec))){
       oct_df[oct_df == geno_vec[i]] <- oct_alt_dose_vec[i]
@@ -45,7 +48,10 @@ gen_gl_preobj <- function(vcf, oct_libs = c(), tet_libs = c(),
   } else{sum_alt_8 <- c()}
   #
   if(length(tet_libs) > 0){
-    tet_df <- vcf[, tet_libs]
+    tet_df_tmp <- vcf[, tet_libs]
+    tet_df <- data.frame(apply(tet_df_tmp, 2, function(y)
+      unlist(lapply(strsplit(y, split = ':'), function(x) x[1]))), 
+      stringsAsFactors = F)
     tet_df[tet_df == './.'] <- NA
     for(i in seq(length(geno_vec))){
       tet_df[tet_df == geno_vec[i]] <- tet_alt_dose_vec[i]
