@@ -27,10 +27,10 @@ gen_function_file <- file.path(gen.dir, 'general_functions.r')
 source(gen_function_file)
 
 # on Cori
-#gen_function_file <- '/global/homes/g/grabowsp/tools/sg_ha_effort/polyploid_genos/general_functions.r'
+#gen_function_file <- '/global/homes/g/grabowsp/tools/sg_8X/general_r_tools/general_functions.r'
 #source(gen_function_file)
 
-#adeg_function_file <- '/global/homes/g/grabowsp/tools/sg_ha_effort/polyploid_genos/adegenet_analysis/adegenet_functions.r'
+#adeg_function_file <- '/global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/adegenet_functions.r'
 #source(adeg_function_file)
 
 ### IMPORT DATA ###
@@ -41,7 +41,7 @@ data_dir <- args[1]
 data_dir <- add_slash(data_dir)
 
 vcf_search_string <- args[2]
-#vcf_search_string <- 'Chr01K.polyploid.CDS.geosamps.vcf_*'
+#vcf_search_string <- 'Chr01K.tetrasomic.CDS.allsamps.vcf_*'
 
 vcf_search_command <- paste('ls ', data_dir, vcf_search_string, sep = '')
 
