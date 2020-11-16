@@ -1,5 +1,7 @@
 # Script for subsampling the chromosome genlight objects to make a single
 #   object including a random set of SNPs from all chromosomes
+#  This includes both subsampling each subfile and then subsampling 
+#    to get the exact number of SNPs
 
 #module load python/3.7-anaconda-2019.07
 #source activate r_adegenet_env
@@ -50,6 +52,7 @@ out_full <- paste(data_dir, out_short, sep = '')
 ### SET VARIABLES ###
 per_subsamp <- as.numeric(args[4])
 #per_subsamp <- 0.07
+tot_SNP_num <- as.numeric(args[5])
 
 ##############
 
@@ -66,7 +69,10 @@ for(fn in c(2:length(file_ls))){
   print(fn)
 }
 
-saveRDS(tot_gl, out_full)
+sub_inds_2 <- sort(sample(seq(nLoc(tot_gl)), size = tot_SNP_sum))
+tot_gl_2 <- tot_gl[ , sub_inds_2]
+
+saveRDS(tot_gl_2, out_full)
 
 quit(save = 'no')
 
