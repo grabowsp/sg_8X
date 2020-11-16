@@ -53,5 +53,79 @@ for CHROM in 01K 01N 02K 02N 03K 03N 04K 04N 05K 05N;
     split -l 100000 -d - $OUT_DIR'Chr'$CHROM'.tetrasomic.CDS.'$SAMPSET'.vcf_';
   done
 
-
 ```
+
+## Generate sample header file for VCFs
+* File name:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs/CDS.tetrasomic.geoperm.vcf.sampheader.txt`
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs
+
+SAMPSET=geoperm
+
+gunzip -kc Chr01K.tetrasomic.CDS.$SAMPSET'.vcf.gz' | head -634 | \
+tail -1 > CDS.tetrasomic.$SAMPSET'.vcf.sampheader.txt'
+```
+
+## Generate `genlight` object for each chromosome
+* If want 6+ copies of the MAF, then use 0.0016 as MAF
+  * this is pretty permissive because assumes all samps are 8X
+### Submit scripts
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs
+
+sbatch gen_geoperm_Chr01_05_genlight.sh
+sbatch gen_geoperm_Chr06_09_genlight.sh
+```
+### Example script
+```
+#!/bin/bash
+#SBATCH -D .
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH -A plant
+#SBATCH -C haswell 
+#SBATCH --mem=32G
+#SBATCH --qos=genepool_shared
+#SBATCH -t 48:00:00
+#SBATCH --mail-user pgrabowski@hudsonalpha.org
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=END
+
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/r_adegenet_env
+
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs/
+
+cd $DATA_DIR
+
+HEADER_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs/CDS.tetrasomic.geoperm.vcf.sampheader.txt
+
+SAMPSET=geoperm
+
+MAF_CUT=0.0016
+
+for CHR_N in 02 03 04 05;
+  do
+  for CHR_T in K N;
+    do
+    TEST_CHR=$CHR_N$CHR_T
+    SEARCH_STRING=Chr$TEST_CHR'.tetrasomic.CDS.'$SAMPSET'.vcf_'
+    Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/make_Chr_genlight_objs.r \
+    $DATA_DIR $SEARCH_STRING'*' $HEADER_FILE $MAF_CUT;
+    done;
+  done;
+```
+
+
+
+
+
+
+
+
+
+
+
+

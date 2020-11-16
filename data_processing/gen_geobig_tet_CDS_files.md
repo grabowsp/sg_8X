@@ -65,7 +65,7 @@ SAMPSET=geobig
 gunzip -kc Chr01K.tetrasomic.CDS.$SAMPSET'.vcf.gz' | head -634 | \
 tail -1 > CDS.tetrasomic.$SAMPSET'.vcf.sampheader.txt'
 ```
-## ## Generate `genlight` object for each chromosome
+## Generate `genlight` object for each chromosome
 * If want 6+ copies of the MAF, then use 0.0018 as MAF
   * this is pretty permissive because assumes all samps are 8X
 ### Submit scripts
@@ -73,6 +73,9 @@ tail -1 > CDS.tetrasomic.$SAMPSET'.vcf.sampheader.txt'
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
 
 sbatch gen_geobig_Chr01_genlight.sh
+sbatch gen_geobig_Chr02_05_genlight.sh
+sbatch gen_geobig_Chr06_09_genlight.sh
+
 ```
 ### Example script
 ```
@@ -115,4 +118,22 @@ for CHR_N in 01;
   done;
 
 ```
+
+## Generate genome-wide subsampled `genlight` object 
+* Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
+### Get number of SNPs in each chromosome `genlight` object
+```
+# module load python/3.7-anaconda-2019.07
+# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+# source activate /global/homes/g/grabowsp/.conda/envs/r_adegenet_env
+
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
+FILE_SUB_SHORT=geobig.genlight.rds
+OUT_SHORT=geobig
+
+Rscript .../get_tot_nSNPs.r $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
+
+```
+
+
 

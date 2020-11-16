@@ -77,7 +77,8 @@ tail -1 > CDS.tetrasomic.$SAMPSET'.vcf.sampheader.txt'
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs
 
 sbatch gen_allsamp_Chr01_genlight.sh
-
+sbatch gen_allsamp_Chr02_05_genlight.sh
+sbatch gen_allsamp_Chr06_09_genlight.sh
 ```
 ### Example script
 ```

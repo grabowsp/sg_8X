@@ -3,7 +3,7 @@
 #  Can be used to calculate at what rate to subsample SNPs from each file
 
 #module load python/3.7-anaconda-2019.07
-#source activate r_adegenet_env
+#source activate adegenet_2_env
 
 args = commandArgs(trailingOnly = TRUE)
 
@@ -12,7 +12,7 @@ rundir_args <- commandArgs(trailingOnly = F)
 ### LOAD PACKAGES ###
 
 library(adegenet)
-library(parallel)
+#library(parallel)
 
 # get locations of ancillary github files
 file.arg.name <- '--file='
@@ -40,13 +40,13 @@ file_sub <- args[2]
 file_ls <- system(paste('ls ', data_dir, file_sub, sep = ''), intern = T)
 
 #sub_in <- 'Chr01K.tetrasomic.CDS.geobig.genlight.rds'
-
 #tmp_gl <- readRDS(file_ls[1])
 
 ### SET OUTPUT ###
 out_short <- args[3]
 #out_short <- 'geobig.SNPcount.txt'
-out_full <- paste(data_dir, out_short, sep = '')
+out_suf <- '.SNPcount.txt'
+out_full <- paste(data_dir, out_short, out_suf, sep = '')
 
 ### SET VARIABLES ###
 
@@ -56,7 +56,8 @@ out_full <- paste(data_dir, out_short, sep = '')
 nSNP_vec <- c()
 
 for(i in seq(length(file_ls))){
-  tmp_gl <- readRDS(file_ls[1])
+  print(i)
+  tmp_gl <- readRDS(file_ls[i])
   tmp_nSNP <- nLoc(tmp_gl)
   nSNP_vec <- c(nSNP_vec, tmp_nSNP)
 }

@@ -175,23 +175,23 @@ sbatch gen_geo_genlight.sh
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/r_adegenet_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_ploidy/polyploid_vcfs/CDS_vcfs/geo_samps/
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/
 
 cd $DATA_DIR
 
-HEADER_FILE=/global/cscratch1/sd/grabowsp/sg_ploidy/polyploid_vcfs/CDS_vcfs/geo_samps/CDS.geosamps.vcf.header.txt
+HEADER_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/CDS.tetrasomic.geobig.vcf.sampheader.txt
 
-SAMPSET=geosamps
+SAMPSET=geobig
 
-MAF_CUT=0.002
+MAF_CUT=0.0018
 
 for CHR_N in {01..09};
   do
   for CHR_T in K N;
     do
     TEST_CHR=$CHR_N$CHR_T
-    SEARCH_STRING=Chr$TEST_CHR'.polyploid.CDS.'$SAMPSET'.vcf_'
-    Rscript /global/homes/g/grabowsp/tools/sg_ha_effort/polyploid_genos/adegenet_analysis/make_Chr_genlight_objs.r \
+    SEARCH_STRING=Chr$TEST_CHR'.tetrasomic.CDS.'$SAMPSET'.vcf_'
+    Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/make_Chr_genlight_objs.r \
     $DATA_DIR $SEARCH_STRING'*' $HEADER_FILE $MAF_CUT;
     done;
   done;
