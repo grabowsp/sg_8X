@@ -123,15 +123,18 @@ for CHR_N in 01;
 * Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
 ### Get number of SNPs in each chromosome `genlight` object
 ```
-# module load python/3.7-anaconda-2019.07
-# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 # source activate /global/homes/g/grabowsp/.conda/envs/r_adegenet_env
 
 DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
 FILE_SUB_SHORT=geobig.genlight.rds
 OUT_SHORT=geobig
 
-Rscript .../get_tot_nSNPs.r $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
+cd $DATA_DIR
+
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
 
 ```
 

@@ -64,7 +64,7 @@ for(i in seq(length(file_ls))){
 
 nSNP_df <- data.frame(file = file_ls, nSNPs = nSNP_vec, stringsAsFactors = F)
 
-write.table(nSNP_df, file = nSNP_df, quote = F, sep = '\t', row.names = F,
+write.table(nSNP_df, file = out_full, quote = F, sep = '\t', row.names = F,
   col.names = T)
 
 quit(save = 'no')
