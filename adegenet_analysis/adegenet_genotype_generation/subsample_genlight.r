@@ -69,7 +69,7 @@ for(fn in c(2:length(file_ls))){
   print(fn)
 }
 
-sub_inds_2 <- sort(sample(seq(nLoc(tot_gl)), size = tot_SNP_sum))
+sub_inds_2 <- sort(sample(seq(nLoc(tot_gl)), size = tot_SNP_num))
 tot_gl_2 <- tot_gl[ , sub_inds_2]
 
 saveRDS(tot_gl_2, out_full)
