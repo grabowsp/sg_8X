@@ -20,6 +20,8 @@
   * Tetrasomic SNPs
 * `Pvirgatum_1070g.5alleles.indel.tar.bz2`
   * Tetrasomic indels
+* `Pvirgatum_1070g_all_combined.MNP.noRepeats.vcf.gz`
+  * Multi-allelic SNPs with repeat regions removed
 * `Pvirgatum_1070g.readme`
   * README file
 * There are also individual files for each chromosomes

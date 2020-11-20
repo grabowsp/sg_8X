@@ -155,3 +155,21 @@ done
 # visual inspection shows that the md5 files made on the different systems
 #  are the same
 ```
+
+## Transfer MNP file from HA
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/orig_sujan_files/MNP_files
+
+rsync -P grabowsk@pants.hagsc.org:/home/smamidi_scratch/Pvirgatum_V5/files_share/Pvirgatum_1070g_variants/Pvirgatum_1070g_all_combined.MNP.noRepeats.vcf.gz* .
+
+
+```
+
+### Checksum
+* on HA
+```
+cd /home/f2p1/work/grabowsk/data/switchgrass/check_8X_tet_files
+
+md5sum /home/smamidi_scratch/Pvirgatum_V5/files_share/Pvirgatum_1070g_variants/Pvirgatum_1070g_all_combined.MNP.noRepeats.vcf.gz > GW.MNP.HA.md5
+```
+
