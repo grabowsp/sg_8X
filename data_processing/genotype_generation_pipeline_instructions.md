@@ -30,6 +30,9 @@ experience
 * `make_Chr_genlight_objs.r`
   * used for making chromosome 'genlight' genotype objects
   * `/PATH/TO/REPOSITORY/sg_8X/adegenet_analysis/adegenet_genotype_generation/make_Chr_genlight_objs.r`
+* `get_tot_nSNPs.r`
+  * Used to quickly get the number of SNPs in each chromosome genlight object
+ * `/PATH/TO/REPOSITORY/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r`
 * `subsample_genlight.r`
   * used for making subsampled genome-wide 'genlight' object
   * `/PATH/TO/REPOSITORY/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r`
@@ -173,7 +176,7 @@ sbatch gen_geo_genlight.sh
 #SBATCH --mail-type=END
 
 module load python/3.7-anaconda-2019.07
-source activate /global/homes/g/grabowsp/.conda/envs/r_adegenet_env
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
 DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/
 
@@ -199,43 +202,52 @@ for CHR_N in {01..09};
 
 ## Generate genome-wide subsampled `genlight` object
 * Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
-### Chose subsampling level
-* Decide on goal number of SNPs, calculate total number of SNPs in all 
-chromosome 'genlight' objects, and calculate the percentage needed for goal
-number of SNPs
+### Extract number of SNPs in each chromosome genlight object
+* uses R script to make data frame containing file names and SNPs in each file
+  * `/global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r`
+#### Example
 ```
-# load conda environment
+# load module with adegenet
 module load python/3.7-anaconda-2019.07
-source activate r_adegenet_env
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-# R
-library(adegenet)
+# Set directory where genlight files are stored
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
 
-# adjust these variables
-###
-# directory where genolight objects are
-data_dir <- '/global/cscratch1/sd/grabowsp/sg_ploidy/polyploid_vcfs/CDS_vcfs/geo_samps/'
+# string used for searching for genlight files
+FILE_SUB_SHORT=geobig.genlight.rds
 
-# goal number of subsampled SNPs
-goal_nsnps <- 5e5
-###
+# output prefix
+OUT_SHORT=geobig
 
-file_vec <- system(paste('ls ', data_dir, 'Chr*genlight.rds', sep = ''),
-  intern = T)
+cd $DATA_DIR
 
-n_snp_vec <- c()
-for(i in file_vec){
-  print(i)
-  tmp_in <- readRDS(i)
-  tmp_nsnps <- nLoc(tmp_in)
-  n_snp_vec <- c(n_snp_vec, tmp_nsnps)
-}
-
-tot_snps <- sum(n_snp_vec)
-goal_sub <- goal_nsnps/tot_snps
-print(goal_sub)
-# [1] 0.05910562
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
 ```
+### Choose subsampling level
+* use file generate above to quickly calculate calculate subsampling level.
+  * should chose level slightly higher so can then re-sample to exact SNP number
+#### Example
+* in R
+```
+# module load python/3.7-anaconda-2019.07
+# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+library(data.table)
+
+# file with number of SNPs in each genlight file
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig.SNPcount.txt'
+res <- fread(res_file)
+
+# goal number of SNPs
+goal_n <- 5e4
+
+goal_n / sum(res$nSNPs)
+#[1] 0.005608668
+# this is the subsampling level
+```
+
 ### Generate object
 * uses `subsample_genlight.r` script
 * Takes a few minutes, but can be run in interactive session
@@ -243,7 +255,7 @@ print(goal_sub)
 ```
 # load conda environment
 module load python/3.7-anaconda-2019.07
-source activate r_adegenet_env
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
 # go to directory where want to run script
 cd /global/cscratch1/sd/grabowsp/sg_ploidy/polyploid_vcfs/CDS_vcfs/geo_samps
@@ -251,19 +263,22 @@ cd /global/cscratch1/sd/grabowsp/sg_ploidy/polyploid_vcfs/CDS_vcfs/geo_samps
 # directory with chromosome genlight objects
 DATA_DIR=/global/cscratch1/sd/grabowsp/sg_ploidy/polyploid_vcfs/CDS_vcfs/geo_samps/
 
-# how sample set is used in file names
-SAMPSET=geosamps
+# String used for searching for genlight files
+FILE_SUB=geobig.genlight.rds
+
+# name of output file
+OUT_SHORT=combo.sub.polyploid.CDS.$SAMPSET'.genlight.rds'
 
 # percentage of total SNPs to select
 PER_SUBSAMP=0.07
 
-# FILE_SUB may need to be hardcoded (without the $SAMPSET variable) - try that
-#   if there is an issue
-FILE_SUB=Chr*$SAMPSET'.genlight.rds'
-OUT_NAME=combo.sub.polyploid.CDS.$SAMPSET'.genlight.rds'
+# Exact number of SNPs to have in final file
+TOT_SNP=5e4
+ 
+cd $DATA_DIR
 
-Rscript /global/homes/g/grabowsp/tools/sg_ha_effort/polyploid_genos/adegenet_analysis/subsample_genlight.r \
-$DATA_DIR '*'$FILE_SUB $OUT_NAME $PER_SUBSAMP
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
 ```
 
 

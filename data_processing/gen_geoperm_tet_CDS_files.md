@@ -118,14 +118,57 @@ for CHR_N in 02 03 04 05;
   done;
 ```
 
+## Generate genome-wide subsampled `genlight` object 
+* Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
+* Final file:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geoperm.genlight.rds`
+### Get number of SNPs in each chromosome `genlight` object
+* SNP count file:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs/geoperm.SNPcount.txt`
+```
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs
+FILE_SUB_SHORT=geoperm.genlight.rds
+OUT_SHORT=geoperm
 
+cd $DATA_DIR
 
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
+```
+### Calculate sub-sampling rate
+* in R
+```
+# module load python/3.7-anaconda-2019.07
+# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
+library(data.table)
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs/geoperm.SNPcount.txt'
+res <- fread(res_file)
 
+goal_n <- 5e4
 
+goal_n / sum(res$nSNPs)
+# [1] 0.005839323
+```
+### Generate subsampled `genlight` object
+* Is faster to just run in interactive session
+####
+```
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geoperm_tet_vcfs
+FILE_SUB_SHORT=geoperm.genlight.rds
+OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.geoperm.genlight.rds'
+PER_SUBSAMP=0.006
+TOT_SNP=5e4
 
+cd $DATA_DIR
 
-
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
+```
 
