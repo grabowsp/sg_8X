@@ -177,7 +177,7 @@ $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
 ## Generate sub-genome level genlight objects
 * Generate SNP set for the K-subgenome and N-subgenome SNPs separately
 
-alculate sub-sampling rate
+### Calculate sub-sampling rate
 * in R
 ```
 # module load python/3.7-anaconda-2019.07

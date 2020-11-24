@@ -172,4 +172,12 @@ cd /home/f2p1/work/grabowsk/data/switchgrass/check_8X_tet_files
 
 md5sum /home/smamidi_scratch/Pvirgatum_V5/files_share/Pvirgatum_1070g_variants/Pvirgatum_1070g_all_combined.MNP.noRepeats.vcf.gz > GW.MNP.HA.md5
 ```
+* on Cori
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/orig_sujan_files/MNP_files
 
+md5sum Pvirgatum_1070g_all_combined.MNP.noRepeats.vcf.gz > GW.MNP.NERSC.md5
+```
+* Content of both files:
+  * 8d4f9019c1e9d5d659235a8cf7273bb2
+  * 8d4f9019c1e9d5d659235a8cf7273bb2
