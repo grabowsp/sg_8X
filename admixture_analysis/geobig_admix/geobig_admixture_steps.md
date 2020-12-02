@@ -4,6 +4,9 @@
 * generate tped files with VCF tools
 * generate bed, .bim, and .fam (?) files using plink
 * run admixture
+* Look at CV error
+* Make barplot(s)
+* Make result file(s)
 
 ## Overview
 * Directory with files and results
@@ -48,8 +51,8 @@ write.table(snp_df, file = out_full, quote = F, sep = '\t', row.names = F,
   col.names = F)
 
 ```
-
 ### Generate tped file with VCFtools
+#### Test for 1 chromosome
 ```
 # module load python/3.7-anaconda-2019.07
 # source activate gen_bioinformatics
@@ -72,21 +75,22 @@ vcftools --gzvcf $VCF_FILE --out $OUT_PREFIX --positions $POS_FILE \
 --keep $SAMP_FILE --plink-tped --chrom-map $CHROM_MAP_FILE
 
 ```
-### Submit jobs
+#### Submit jobs for remaining chromosomes
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix
 sbatch gen_geobig_tped_Chr01N_03.sh
 sbatch gen_geobig_tped_Chr04_06.sh
 sbatch gen_geobig_tped_Chr07_09.sh
 ```
-### Concatenate .tped files
+#### Concatenate .tped files
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix
 
 cat *tped > GW_geobig_50k.tped
 cp Chr01K_geobig_50k.tfam GW_geobig_50k.tfam
 ```
-### Generte .bed
+
+## Generte .bed
 ```
 module load python/3.7-anaconda-2019.10
 source activate plink_1_env
@@ -97,7 +101,7 @@ plink --tfile GW_geobig_50k --maf 0.0001 --make-bed --out GW_50k_geobig
 ```
 
 ## Run ADMIXTURE
-
+* Example submit script
 ```
 #!/bin/bash
 #SBATCH -D .
@@ -126,14 +130,14 @@ K_NUM=1
 
 CV_NUM=10
 
-admixture --cv=$CV_NUM $IN_FILE $K_NUM
+admixture --cv=$CV_NUM $IN_FILE $K_NUM | tee log${K_NUM}.out
 
 ```
 ### Make additional submit files
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix
 
-for KN in {1..10};
+for KN in {2..10};
 do
 sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_geobig_admixture_K01.sh > \
 run_geobig_admixture_K$KN'.sh';
@@ -150,10 +154,10 @@ for KN in {2..10};
 do
 sbatch run_geobig_admixture_K$KN'.sh';
 done
-
-
 ```
-### Make CV info
+
+## Analyze CV error
+* in R
 ```
 # module load python/3.7-anaconda-2019.10
 # module swap PrgEnv-intel PrgEnv-gnu
@@ -162,6 +166,8 @@ done
 library(data.table)
 library(tidyverse)
 
+# manually inputted this from the cori output files; should save log files
+#  in the future
 CV_vals <- c(0.13281, 0.10978, 0.09949, 0.09734, 0.09603, 0.09483, 0.09410, 
   0.09377, 0.09328, 0.09336)
 
@@ -181,5 +187,24 @@ out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_a
 pdf(out_file, width = 4.5, height = 4.5)
 gg_cv
 dev.off()
-
 ```
+
+## Generate barplots
+* R script
+  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/geobig_admix/admix_barplot_template.r`
+* Figure
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/GW_50k_geobig.3.ADMIXTURE.memb.pdf`
+
+## Generate Results File
+* File path
+  `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/GW_50k_geobig.3.results.txt`
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/
+
+cut -d " " -f 1 GW_50k_geobig.fam | paste -d " " - GW_50k_geobig.3.Q > \
+GW_50k_geobig.3.results.txt
+```
+
+
+
+

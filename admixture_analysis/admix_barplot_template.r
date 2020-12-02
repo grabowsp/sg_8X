@@ -11,7 +11,7 @@ library(data.table)
 gen_func_file <- '/global/homes/g/grabowsp/tools/sg_8X/general_r_tools/general_functions.r'
 source(gen_func_file)
 
-struc_func_file <- '/home/grabowsky/tools/workflows/sg_8X/structure_analysis/structure_functions/struc_functions.r'
+struc_func_file <- '/global/homes/g/grabowsp/tools/sg_8X/structure_analysis/structure_functions/struc_functions.r'
 # * change to appropriate path
 source(struc_func_file)
 
@@ -26,7 +26,7 @@ admix_res <- fread(admix_res_file, header = F)
 fam_file_short <- 'GW_50k_geobig.fam'
 fam_file <- paste(data_dir, fam_file_short, sep = '')
 fam_info <- fread(fam_file, header = F)
-samp_names <- fam_info[, .(1)]
+samp_names <- unlist(fam_info[, 1])
 
 ### SET OUTPUTS ###
 
