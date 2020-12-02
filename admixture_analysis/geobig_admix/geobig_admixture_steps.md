@@ -203,6 +203,9 @@ cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/
 
 cut -d " " -f 1 GW_50k_geobig.fam | paste -d " " - GW_50k_geobig.3.Q > \
 GW_50k_geobig.3.results.txt
+
+cut -d " " -f 1 GW_50k_geobig.fam | paste -d " " - GW_50k_geobig.2.Q > \
+GW_50k_geobig.2.results.txt
 ```
 
 
