@@ -18,3 +18,15 @@
 * VCF sample name list:
   * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/geo_big_names.txt`
 
+## `geobig_southcoastal`
+* 448 samples with >0.9 membership in "group 1" in K=2 ADMIXTURE results using `geo_big sample`s
+  * These correspond to previous "lowland" genetic designation
+* VCF sample name list:
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/geobig_SouthCoastal_names.txt` 
+
+## `geobig_northinland`
+* 265 samples with >0.9 membership in "group 2" in K=2 ADMIXTURE results using geo_big samples
+  * these correspond to previous "upland" genetic designation
+* VCF sample name list
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/geobig_NorthInland_names.txt`
+

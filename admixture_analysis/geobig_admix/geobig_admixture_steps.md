@@ -206,6 +206,9 @@ GW_50k_geobig.3.results.txt
 
 cut -d " " -f 1 GW_50k_geobig.fam | paste -d " " - GW_50k_geobig.2.Q > \
 GW_50k_geobig.2.results.txt
+
+cut -d " " -f 1 GW_50k_geobig.fam | paste -d " " - GW_50k_geobig.4.Q > \
+GW_50k_geobig.4.results.txt
 ```
 
 

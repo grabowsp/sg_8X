@@ -68,6 +68,65 @@ for KR in {1..3};
 done
 ```
 
+## Get Estimated Ln Prob of Data
+* uses shell script to compile LnProb data and R script to generate figure
+* Ln Prob data table
+  * `/home/f2p1/work/grabowsk/data/switchgrass/structure_8X/geobig/geobig_alltet_LnProbData_deltaK.txt`
+* delta K figure
+  * `/home/f2p1/work/grabowsk/data/switchgrass/structure_8X/geobig/geobig_alltet_LnProbData_deltaK.pdf`
+### Run interactively
+```
+bash
 
+cd /home/f2p1/work/grabowsk/data/switchgrass/structure_8X/geobig
 
-* Next steps: generate genotypes, move to HA, have location for parameter files, and run structure
+OUT_PRE=geobig_alltet_
+MAX_K=10
+N_R=3
+
+/home/grabowsky/tools/workflows/sg_8X/structure_analysis/structure_functions/run_deltaK_steps.sh $OUT_PRE $MAX_K $N_R
+```
+
+## Run CLUMPP
+### K=2
+```
+bash
+
+cd /home/f2p1/work/grabowsk/data/switchgrass/structure_8X/geobig
+
+RES_PRE=geobig_alltet_
+K_VAL=2
+N_C=821
+N_R=3
+
+/home/grabowsky/tools/workflows/sg_8X/structure_analysis/structure_functions/run_clumpp_steps.sh $RES_PRE $K_VAL $N_C $N_R
+
+```
+### K=3
+```
+bash
+
+cd /home/f2p1/work/grabowsk/data/switchgrass/structure_8X/geobig
+
+RES_PRE=geobig_alltet_
+K_VAL=3
+N_C=821
+N_R=3
+
+/home/grabowsky/tools/workflows/sg_8X/structure_analysis/structure_functions/run_clumpp_steps.sh $RES_PRE $K_VAL $N_C $N_R
+
+```
+### K=4
+```
+bash
+
+cd /home/f2p1/work/grabowsk/data/switchgrass/structure_8X/geobig
+
+RES_PRE=geobig_alltet_
+K_VAL=4
+N_C=821
+N_R=3
+
+/home/grabowsky/tools/workflows/sg_8X/structure_analysis/structure_functions/run_clumpp_steps.sh $RES_PRE $K_VAL $N_C $N_R
+
+```
