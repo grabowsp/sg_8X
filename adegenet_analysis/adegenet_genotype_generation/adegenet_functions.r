@@ -249,4 +249,85 @@ gen_struc_genos <- function(genotypes, lib_name, ploidy,
   return(struc_df)
 }
 
+#############
+
+assign_pseudohap_geno <- function(count_char){
+  # take a character containing the counts of reads for each allele and return 
+  #  a pseudohaploid genotype based on randomly selecting one of those reads
+  # INPUTS
+  # count_char = character of number of REF and ALT reads separated by comma;
+  #                can be extracted from the VCF
+  # OUTPUT
+  # pseudohap genotype based on randomly sampling one allele read;
+  # 0 = REF; 1 = ALT
+  if(is.na(count_char)){
+    pseudohap_geno <- NA
+  } else{
+    count_vec <- as.numeric(unlist(strsplit(count_char, split = ',')))
+    allele_vec <- c(rep(0, times = count_vec[1]), rep(1, times = count_vec[2]))
+    pseudohap_geno <- sample(allele_vec, size = 1)
+  }
+  return(pseudohap_geno)
+}
+
+#########
+
+gen_pseudohap_gl_preobj <- function(vcf, oct_libs = c(), tet_libs = c(),
+  maf_cut = 0.001){
+  # Function for filtering vcf by MAF freq and making PSEUDOHAP GENOTYPES and 
+  #  generating necessary objects to be used for making a "genlight" object
+  # INPUTS
+  # vcf = inputted vcf with header; needs following columns:
+  #        ID with snp names
+  #        CHROM with chromosome name
+  #        POS with SNP position
+  #        REF with reference allele
+  #        ALT with alternate allele
+  #        Sample library names as column names
+  # oct_libs = names of 8X libraries
+  # tet_libs = names of 4X libraries
+  # maf_cut = minor allele frequency cutoff
+  # OUTPUT
+  # list with following elements, elements of list are based on vcf with 
+  #   SNPs with MAF below the cutoff removed
+  # 'geno_mat' = matrix of genotypes showing the number of ALT alleles;
+  #                maximum number is 2 for 4X and 4 for 8X libraries
+  # 'loc.names' =  vector of the names of the retained SNPs
+  # 'chromosome' = vector of the chromosome name(s)
+  # 'position' = vector of the position of the SNPs
+  # 'ploidy' = vector of the ploidy for each sample
+  #              2 = 4X switchgrass (because of disomic inheritance)
+  #              4 = 8X switchgrass (because of tetrasomic inheritance)
+  # 'loc.all' = vector of the REF and ALT alleles, ex: 'g/a'
+  #############
+  tot_samp_vec <- c(oct_libs, tet_libs)
+  tot_df_tmp <- vcf[, tot_samp_vec]
+  tot_df <- data.frame(apply(tot_df_tmp, 2, function(y)
+    unlist(lapply(strsplit(y, split = ':'), function(x) x[2]))),
+    stringsAsFactors = F)
+  tot_df[tot_df == '0,0'] <- NA
+  hap_genos <- apply(tot_df, c(1,2), assign_pseudohap_geno)
+  #  
+  n_nas <- apply(tot_df, 1, function(x) sum(is.na(unlist(x))))
+  n_gsamps <- ncol(tot_df) - n_nas
+  allele_freq <- apply(hap_genos, 1, sum, na.rm = T) / n_gsamps
+  allele_freq_1 <- 1 - allele_freq  
+  minor_af <- apply(cbind(allele_freq, allele_freq_1), 1, function(x) min(x)[1])
+  remove_inds <- which(minor_af < maf_cut)
+  #
+  keep_inds <- setdiff(seq(nrow(vcf)), remove_inds)
+  #
+  preobj_ls <- list()
+  preobj_ls[['geno_mat']] <- hap_genos[keep_inds, ]
+  preobj_ls[['loc.names']] <- vcf$ID[keep_inds]
+  preobj_ls[['chromosome']] <- vcf$CHROM[keep_inds]
+  preobj_ls[['position']] <- vcf$POS[keep_inds]
+  preobj_ls[['ploidy']] <- rep(1, times = ncol(tot_df)) 
+  preobj_ls[['loc.all']] <- paste(tolower(vcf$REF[keep_inds]),
+    tolower(vcf$ALT[keep_inds]), sep = '/')
+  #
+  return(preobj_ls)
+}
+
+
 

@@ -68,18 +68,15 @@ gunzip -kc Chr01K.disomic.CDS.$SAMPSET'.vcf.gz' | head -648 | \
 tail -1 > CDS.disomic.$SAMPSET'.vcf.sampheader.txt'
 ```
 
-
-
-
 ## Generate `genlight` object for each chromosome
 * If want 6+ copies of the MAF, then use 0.0015 as MAF
   * this is pretty permissive because assumes all samps are 8X
 ### Submit scripts
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs
 
-sbatch gen_geobigSouthCoastal_Chr01_05_genlight.sh
-sbatch gen_geobigSouthCoastal_Chr06_09_genlight.sh
+sbatch gen_allsamp_dip_Chr01_05_genlight.sh
+sbatch gen_allsamp_dip_Chr06_09_genlight.sh
 
 ### Example script
 ```
@@ -115,13 +112,69 @@ for CHR_N in 01 02 03 04 05;
   for CHR_T in K N;
     do
     TEST_CHR=$CHR_N$CHR_T
-    SEARCH_STRING=Chr$TEST_CHR'.tetrasomic.CDS.'$SAMPSET'.vcf_'
+    SEARCH_STRING=Chr$TEST_CHR'.disomic.CDS.'$SAMPSET'.vcf_'
     Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/make_dip_only_Chr_genlight_objs.r \
     $DATA_DIR $SEARCH_STRING'*' $HEADER_FILE $MAF_CUT;
     done;
   done;
 
 ```
+
+## Generate genome-wide subsampled `genlight` object 
+* Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
+* Final file:
+  `/global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs/GW.50kSNPs.disomic.CDS.allsamps.genlight.rds`
+### Get number of SNPs in each chromosome `genlight` object
+* SNP count file
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs/allsamps_diploid.SNPcount.txt`
+```
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs/
+FILE_SUB_SHORT=allsamps.genlight.rds
+OUT_SHORT=allsamps_diploid
+
+cd $DATA_DIR
+
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
+```
+### Calculate sub-sampling rate
+* in R
+```
+# module load python/3.7-anaconda-2019.10
+# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+library(data.table)
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs/allsamps_diploid.SNPcount.txt'
+res <- fread(res_file)
+
+goal_n <- 1e5
+
+goal_n / sum(res$nSNPs)
+# [1] 0.005905933
+```
+### Generate subsampled `genlight` object
+* Is faster to just run in interactive session
+```
+module load python/3.7-anaconda-2019.10
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs
+FILE_SUB_SHORT=allsamps.genlight.rds
+OUT_SHORT='GW.50kSNPs.disomic.CDS.allsamps.genlight.rds'
+PER_SUBSAMP=0.0065
+TOT_SNP=1e5
+
+cd $DATA_DIR
+
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
+```
+
+
+
 
 
 

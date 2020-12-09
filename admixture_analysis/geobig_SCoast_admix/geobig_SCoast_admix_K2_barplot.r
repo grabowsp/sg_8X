@@ -16,14 +16,14 @@ struc_func_file <- '/global/homes/g/grabowsp/tools/sg_8X/structure_analysis/stru
 source(struc_func_file)
 
 ### LOAD INPUTS ###
-data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/'
+data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_SouthCoastal_admix/'
 data_dir <- add_slash(data_dir)
 
-admix_res_short <- 'GW_50k_geobig.3.Q'
+admix_res_short <- 'GW_50k_geobigSouthCoastal.2.Q'
 admix_res_file <- paste(data_dir, admix_res_short, sep = '')
 admix_res <- fread(admix_res_file, header = F)
 
-fam_file_short <- 'GW_50k_geobig.fam'
+fam_file_short <- 'GW_50k_geobigSouthCoastal.fam'
 fam_file <- paste(data_dir, fam_file_short, sep = '')
 fam_info <- fread(fam_file, header = F)
 samp_names <- unlist(fam_info[, 1])
@@ -48,21 +48,12 @@ admix_df <- data.frame(samp_names, admix_res, stringsAsFactors = F)
 
 ### evaluate what the groups are and set group plotting variables
 
-# for K=2 results use:
-# test_samp_orders <- order(admix_df$V2)
-
-# for K's above 2, use:
 # re-order samples based on 'pop_order'
-test_samp_orders <- order_struc_samps(clumpp_result_df = 
-  admix_df[, c(2:ncol(admix_df))], pop_order = c(1:ncol(admix_res)), 
-  zero_cut = 0.1)
+#test_samp_orders <- order_struc_samps(clumpp_result_df = 
+#  admix_df[, c(2:ncol(admix_df))], pop_order = c(1:ncol(admix_res)), 
+#  zero_cut = 0.1)
 
-# For some reason, some samples don't make it out of this, so need to make sure
-#   they get included
-if(length(test_samp_orders != nrow(admix_df))){
-  test_samp_orders <- c(test_samp_orders,
-    setdiff(seq(nrow(admix_df)), test_samp_orders))
-}
+test_samp_orders <- order(admix_df$V2)
 
 #####
 res_ord <- admix_df[test_samp_orders, ]

@@ -130,7 +130,7 @@ for CHR_N in 01;
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch//geobig_northinland_tet_vcfs/
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_northinland_tet_vcfs/
 FILE_SUB_SHORT=geobig_northinland.genlight.rds
 OUT_SHORT=geobig_northinland
 

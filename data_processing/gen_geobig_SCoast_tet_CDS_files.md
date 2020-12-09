@@ -126,18 +126,17 @@ for CHR_N in 01 02 03 04 05;
 ## Generate genome-wide subsampled `genlight` object 
 * Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
 * Final file:
-  `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds`
-
+  `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig_southcoastal.genlight.rds`
 ### Get number of SNPs in each chromosome `genlight` object
 * SNP count file
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig.SNPcount.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs/geobig_southcoastal.SNPcount.txt`
 ```
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
-FILE_SUB_SHORT=geobig.genlight.rds
-OUT_SHORT=geobig
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs
+FILE_SUB_SHORT=geobig_southcoastal.genlight.rds
+OUT_SHORT=geobig_southcoastal
 
 cd $DATA_DIR
 
@@ -151,13 +150,13 @@ $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
 # source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
 library(data.table)
-res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig.SNPcount.txt'
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs/geobig_southcoastal.SNPcount.txt'
 res <- fread(res_file)
 
 goal_n <- 5e4
 
 goal_n / sum(res$nSNPs)
-# [1] 0.005608668
+# [1] 0.008424916
 ```
 ### Generate subsampled `genlight` object
 * Is faster to just run in interactive session
@@ -166,10 +165,10 @@ goal_n / sum(res$nSNPs)
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
-FILE_SUB_SHORT=geobig.genlight.rds
-OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds'
-PER_SUBSAMP=0.006
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs
+FILE_SUB_SHORT=geobig_southcoastal.genlight.rds
+OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.geobig_southcoastal.genlight.rds'
+PER_SUBSAMP=0.009
 TOT_SNP=5e4
 
 cd $DATA_DIR
@@ -177,70 +176,6 @@ cd $DATA_DIR
 Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
 $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
 ```
-
-## Generate sub-genome level genlight objects
-* Generate SNP set for the K-subgenome and N-subgenome SNPs separately
-
-### Calculate sub-sampling rate
-* in R
-```
-# module load python/3.7-anaconda-2019.07
-# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
-
-library(data.table)
-res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig.SNPcount.txt'
-res <- fread(res_file)
-
-k_inds <- grep('K.tetrasomic', res$file, fixed = T)
-n_inds <- grep('N.tetrasomic', res$file, fixed = T)
-
-goal_n <- 5e4
-
-goal_n / sum(res$nSNPs[k_inds])
-# K subgenome
-# [1] 0.01102885
-
-goal_n / sum(res$nSNPs[n_inds])
-# N subgenome
-# [1] 0.01141238
-```
-### Generate subsampled `genlight` object for each subgenome
-* Is faster to just run in interactive session
-####
-```
-module load python/3.7-anaconda-2019.07
-source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
-
-# K subgenome
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
-FILE_SUB_SHORT=K.tetrasomic.CDS.geobig.genlight.rds
-OUT_SHORT=KSub.50kSNPs.tetrasomic.CDS.geobig.genlight.rds
-PER_SUBSAMP=0.012
-TOT_SNP=5e4
-
-cd $DATA_DIR
-
-Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
-$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP \
-$TOT_SNP
-
-# N subgenome
-FILE_SUB_SHORT=N.tetrasomic.CDS.geobig.genlight.rds
-OUT_SHORT=NSub.50kSNPs.tetrasomic.CDS.geobig.genlight.rds
-
-Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
-$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP \
-$TOT_SNP
-
-```
-
-
-
-
-
-
-
-
 
 
 
