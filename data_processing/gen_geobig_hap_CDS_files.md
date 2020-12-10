@@ -2,7 +2,11 @@
 
 ## Generate 'genlight' object for each chromosome
 * If want 6+ copies of the MAF, then use 0.0075 as MAF
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/
 
+sbatch gen_geobig_pseudohap_genlight_Chr01.sh
+```
 
 ### Example script
 ```
@@ -20,8 +24,8 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-type=END
 
-module load python/3.7-anaconda-2019.07
-source activate /global/homes/g/grabowsp/.conda/envs/r_adegenet_env
+module load python/3.7-anaconda-2019.10
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
 DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/
 
