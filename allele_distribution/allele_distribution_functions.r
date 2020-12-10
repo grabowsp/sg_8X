@@ -23,6 +23,30 @@ gen_admix_popind_list <- function(admix_res, group_cutoff){
 }
 
 ###########
+gen_admix_pop_samp_list <- function(admix_res, group_cutoff){
+  # Get names of samples with ancestry above "group" cutoff for
+  #   each population in admix_res
+  # INPUTS
+  # admix_res = data.table or data.frame with first column = sample names and
+  #              remaining columns from Q matrix outputted by ADMIXTURE
+  # group_cutoff = the ancestry value above which a sample is considered to be 
+  #                  a "pure" member of a group
+  # OUTPUT
+  # list with as many elements as K used for ADMIXTURE, each element includes
+  #    the sample names of "pure" samples in the respective populations
+  #############################3
+  pop_ind_list <- list()
+  for(i in c(2:ncol(admix_res))){
+    tmp_name_num <- i-1
+    tmp_name <- paste('g', tmp_name_num, sep = '')
+    pop_ind_list[[tmp_name]] <- admix_res$V1[which(
+      admix_res[[paste('V', i, sep = '')]] > group_cutoff)]
+  }
+  return(pop_ind_list)
+}
+
+
+###########
 
 find_share_unique_inds <- function(missing_allele_ind_list, n_snps){
   # Find indices of alleles that are private to individual populations 

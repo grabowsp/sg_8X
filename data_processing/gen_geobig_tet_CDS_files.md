@@ -121,8 +121,11 @@ for CHR_N in 01;
 
 ## Generate genome-wide subsampled `genlight` object 
 * Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
-* Final file:
-  `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds`
+### Final files:
+* 50k SNPs:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds`
+* 500k SNPs:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.500kSNPs.tetrasomic.CDS.geobig.genlight.rds`
 
 ### Get number of SNPs in each chromosome `genlight` object
 * SNP count file
@@ -140,7 +143,8 @@ cd $DATA_DIR
 Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/get_tot_nSNPs.r \
 $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
 ```
-### Calculate sub-sampling rate
+### 50k SNPs
+#### Calculate sub-sampling rate
 * in R
 ```
 # module load python/3.7-anaconda-2019.07
@@ -155,7 +159,7 @@ goal_n <- 5e4
 goal_n / sum(res$nSNPs)
 # [1] 0.005608668
 ```
-### Generate subsampled `genlight` object
+#### Generate subsampled `genlight` object
 * Is faster to just run in interactive session
 ####
 ```
@@ -173,6 +177,42 @@ cd $DATA_DIR
 Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
 $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
 ```
+### 500k SNPs
+#### Calculate sub-sampling rate
+* in R
+```
+# module load python/3.7-anaconda-2019.07
+# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+library(data.table)
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig.SNPcount.txt'
+res <- fread(res_file)
+
+goal_n <- 5e5
+
+goal_n / sum(res$nSNPs)
+# [1] 0.05608668
+```
+#### Generate subsampled `genlight` object
+* Is faster to just run in interactive session
+```
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs
+FILE_SUB_SHORT=geobig.genlight.rds
+OUT_SHORT='GW.500kSNPs.tetrasomic.CDS.geobig.genlight.rds'
+PER_SUBSAMP=0.06
+TOT_SNP=5e5
+
+cd $DATA_DIR
+
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
+$DATA_DIR 'Chr*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
+```
+
+
+
 
 ## Generate sub-genome level genlight objects
 * Generate SNP set for the K-subgenome and N-subgenome SNPs separately
