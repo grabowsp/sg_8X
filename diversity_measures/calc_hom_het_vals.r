@@ -23,7 +23,7 @@ div_funct_file <- file.path(script.basename, 'div_measures_functions.r')
 source(div_funct_file)
 
 # gen_funct_file <- '/global/homes/g/grabowsp/tools/sg_8X/general_r_tools/general_functions.r'
-gen_funct_file <- file.path(script.basename, 
+gen_funct_file <- file.path(gen.basename, 
   'general_r_tools/general_functions.r')
 source(gen_funct_file)
 
