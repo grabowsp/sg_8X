@@ -44,7 +44,7 @@ out_total <- paste(out_dir, out_pre, '.HETvals.rds', sep = '')
 
 ### SET VARIABLES ###
 
-block_in <- args[4]
+block_in <- as.numeric(args[4])
 #block_in <- 1e5
 
 
