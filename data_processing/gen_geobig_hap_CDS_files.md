@@ -6,6 +6,13 @@
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/
 
 sbatch gen_geobig_pseudohap_genlight_Chr01.sh
+
+sbatch gen_geobig_pseudohap_genlight_Chr02_03.sh
+sbatch gen_geobig_pseudohap_genlight_Chr04_05.sh
+sbatch gen_geobig_pseudohap_genlight_Chr06_07.sh
+sbatch gen_geobig_pseudohap_genlight_Chr08_09.sh
+
+
 ```
 
 ### Example script
@@ -47,9 +54,6 @@ for CHR_N in 01;
     $DATA_DIR $SEARCH_STRING'*' $HEADER_FILE $MAF_CUT;
     done;
   done;
-
-
-
 
 ```
 
