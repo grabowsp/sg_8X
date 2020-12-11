@@ -171,7 +171,7 @@ gen_share_unique_useNames_list <- function(group_name_list, genos,
     # subsample indices so equal number in each group
     group_sub_names <- lapply(group_name_list, sample, size = min_g_num)
     # generate genotype object for each group
-    tmp_genos <- lapply(group_sub_inds, function(x)
+    tmp_genos <- lapply(group_sub_names, function(x)
       genos[indNames(genos) %in% x, ])
     # find indices of SNPs missing allele 1 or allele 2 in each group
     a1_missing_inds <- lapply(tmp_genos, function(x) which(glMean(x) == 1))
