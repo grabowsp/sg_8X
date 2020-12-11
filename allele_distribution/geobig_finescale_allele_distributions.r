@@ -49,127 +49,106 @@ group_cutoff <- 0.9
 
 ###########
 
-gb_k2_group_inds <- gen_admix_popind_list(gb_admix_k2_res, group_cutoff)
-gb_k3_group_inds <- gen_admix_popind_list(gb_admix_k3_res, group_cutoff)
+#gb_k2_group_inds <- gen_admix_popind_list(gb_admix_k2_res, group_cutoff)
+#gb_k3_group_inds <- gen_admix_popind_list(gb_admix_k3_res, group_cutoff)
 
-ni_k3_group_inds <- gen_admix_popind_list(ni_admix_k3_res, group_cutoff)
+#ni_k3_group_inds <- gen_admix_popind_list(ni_admix_k3_res, group_cutoff)
 
-sc_k2_group_inds <- gen_admix_popind_list(sc_admix_k2_res, group_cutoff)
-sc_k4_group_inds <- gen_admix_popind_list(sc_admix_k4_res, group_cutoff)
+#sc_k2_group_inds <- gen_admix_popind_list(sc_admix_k2_res, group_cutoff)
+#sc_k4_group_inds <- gen_admix_popind_list(sc_admix_k4_res, group_cutoff)
+
+gb_k2_group_names <- gen_admix_pop_samp_list(gb_admix_k2_res, group_cutoff)
+gb_k3_group_names <- gen_admix_pop_samp_list(gb_admix_k3_res, group_cutoff)
+
+ni_k3_group_names <- gen_admix_pop_samp_list(ni_admix_k3_res, group_cutoff)
+
+sc_k2_group_names <- gen_admix_pop_samp_list(sc_admix_k2_res, group_cutoff)
+sc_k4_group_names <- gen_admix_pop_samp_list(sc_admix_k4_res, group_cutoff)
 
 ### gb_K2
 ## Group 1
-samp_meta[VCF_NAME %in% gb_admix_k2_res$V1[gb_k2_group_inds[['g1']]], 
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% gb_k2_group_names[['g1']], .N, by=STATE]
 # Lowland/SouthCoastal
-samp_meta[VCF_NAME %in% gb_admix_k2_res$V1[gb_k2_group_inds[['g1']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% gb_k2_group_names[['g1']], .N, by=NQUIRE_PLOIDY]
 # almost entirely 4X; 14 8X, 3 6X
 ## Group 2
-samp_meta[VCF_NAME %in% gb_admix_k2_res$V1[gb_k2_group_inds[['g2']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% gb_k2_group_names[['g2']], .N, by=STATE]
 # upland/NorthInland
-samp_meta[VCF_NAME %in% gb_admix_k2_res$V1[gb_k2_group_inds[['g2']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% gb_k2_group_names[['g2']], .N, by=NQUIRE_PLOIDY]
 # 50:50 4X:8X
 
 ### gb_K3
 ## Group 1
-samp_meta[VCF_NAME %in% gb_admix_k3_res$V1[gb_k3_group_inds[['g1']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% gb_k3_group_names[['g1']], .N, by=STATE]
 # Atlantic
-samp_meta[VCF_NAME %in% gb_admix_k3_res$V1[gb_k3_group_inds[['g1']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% gb_k3_group_names[['g1']], .N, by=NQUIRE_PLOIDY]
 # Mainly 4X
 ## Group 2
-samp_meta[VCF_NAME %in% gb_admix_k3_res$V1[gb_k3_group_inds[['g2']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% gb_k3_group_names[['g2']], .N, by=STATE]
 # Gulf Coast/Tx
-samp_meta[VCF_NAME %in% gb_admix_k3_res$V1[gb_k3_group_inds[['g2']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% gb_k3_group_names[['g2']], .N, by=NQUIRE_PLOIDY]
 # Mainly 4X, 8 8X, 2 6X
 ## Group 3
-samp_meta[VCF_NAME %in% gb_admix_k3_res$V1[gb_k3_group_inds[['g3']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% gb_k3_group_names[['g3']], .N, by=STATE]
 # Midwest
-samp_meta[VCF_NAME %in% gb_admix_k3_res$V1[gb_k3_group_inds[['g3']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% gb_k3_group_names[['g3']], .N, by=NQUIRE_PLOIDY]
 # 50:50 4X:8X
 
 ### ni_K3
 ## Group 1
-samp_meta[VCF_NAME %in% ni_admix_k3_res$V1[ni_k3_group_inds[['g1']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% ni_k3_group_names[['g1']], .N, by=STATE]
 # Cosmopolitan 8X
-samp_meta[VCF_NAME %in% ni_admix_k3_res$V1[ni_k3_group_inds[['g1']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% ni_k3_group_names[['g1']], .N, by=NQUIRE_PLOIDY]
 # Only 8X
 ## Group 2
-samp_meta[VCF_NAME %in% ni_admix_k3_res$V1[ni_k3_group_inds[['g2']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% ni_k3_group_names[['g2']], .N, by=STATE]
 # Eastern 8X
-samp_meta[VCF_NAME %in% ni_admix_k3_res$V1[ni_k3_group_inds[['g2']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% ni_k3_group_names[['g2']], .N, by=NQUIRE_PLOIDY]
 # Only 8X
 ## Group 3
-samp_meta[VCF_NAME %in% ni_admix_k3_res$V1[ni_k3_group_inds[['g3']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% ni_k3_group_names[['g3']], .N, by=STATE]
 # Midwest 4X
-samp_meta[VCF_NAME %in% ni_admix_k3_res$V1[ni_k3_group_inds[['g3']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% ni_k3_group_names[['g3']], .N, by=NQUIRE_PLOIDY]
 # Only 4X
 
 ### sc_K2
 ## Group 1
-samp_meta[VCF_NAME %in% sc_admix_k2_res$V1[sc_k2_group_inds[['g1']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% sc_k2_group_names[['g1']], .N, by=STATE]
 # Texas
-samp_meta[VCF_NAME %in% sc_admix_k2_res$V1[sc_k2_group_inds[['g1']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% sc_k2_group_names[['g1']], .N, by=NQUIRE_PLOIDY]
 # Almost only 4X, 1 8X, 2 6X
 ## Group 2
-samp_meta[VCF_NAME %in% sc_admix_k2_res$V1[sc_k2_group_inds[['g2']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% sc_k2_group_names[['g2']], .N, by=STATE]
 # Atlantic
-samp_meta[VCF_NAME %in% sc_admix_k2_res$V1[sc_k2_group_inds[['g2']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% sc_k2_group_names[['g2']], .N, by=NQUIRE_PLOIDY]
 # Almost only 4X, 2 8X, 1 6X
 
 ### sc_K4
 ## Group 1
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g1']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g1']], .N, by=STATE]
 # Texas
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g1']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g1']], .N, by=NQUIRE_PLOIDY]
 # Almost only 4X, 1 8X, 1 6X
 ## Group 2
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g2']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g2']], .N, by=STATE]
 # Mississippi
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g2']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g2']], .N, by=NQUIRE_PLOIDY]
 # Exclusively 4X
 ## Group 3
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g3']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g3']], .N, by=STATE]
 # Northern Atlantic
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g3']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g3']], .N, by=NQUIRE_PLOIDY]
 # Exclusively 4X
 ## Group 4
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g4']]],
-  .N, by=STATE]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g4']], .N, by=STATE]
 # Southern Atlantic
-samp_meta[VCF_NAME %in% sc_admix_k4_res$V1[sc_k4_group_inds[['g4']]],
-  .N, by=NQUIRE_PLOIDY]
+samp_meta[VCF_NAME %in% sc_k4_group_names[['g4']], .N, by=NQUIRE_PLOIDY]
 # Almost exclusively 4X, 2 8X
 
-
-gb_k2_groups_in_genos <- lapply(gb_k2_group_inds, function(x)
-  which(indNames(genos) %in% gb_admix_k2_res$V1[x]))
-gb_k3_groups_in_genos <- lapply(gb_k3_group_inds, function(x)
-  which(indNames(genos) %in% gb_admix_k3_res$V1[x]))
+gb_k2_groups_in_genos <- lapply(gb_k2_group_names, function(x)
+  which(indNames(genos) %in% x))
+gb_k3_groups_in_genos <- lapply(gb_k3_group_names, function(x)
+  which(indNames(genos) %in% x))
 
 
 

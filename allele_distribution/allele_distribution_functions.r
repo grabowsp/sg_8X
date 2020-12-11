@@ -142,6 +142,65 @@ gen_share_unique_list <- function(group_ind_list, genos, n_test_reps){
 
 ###########
 
+gen_share_unique_useNames_list <- function(group_name_list, genos, 
+  n_test_reps){
+  # Function to run replicate tests identifying unique alleles and alleles
+  #   shared by combinations of groups and all groups
+  #  Adapted from gen_share_unique_list, which uses group indices instead of
+  #    names
+  # INPUTS
+  # group_name_list = list containing the sample names
+  #                   that belong to different groups;
+  # genos = genlight genotype object
+  # n_test_reps = number of replicates to run
+  # OUTPUT
+  # list with three elements. Each element has 'n_test_reps' sub-elements
+  #    for each test.
+  #  'a1' = indices where allele 1 is unique/shared amongst populations
+  #  'a2' = indices where allele 2 is unique/shared amonst populations
+  #  'all_shared' = indices where minor allele is shared by all populations;
+  #                  ie: all populations have both allele 1 and 2
+  ######################
+  tot_out_list <- list()
+  a1_rep_list <- list()
+  a2_rep_list <- list()
+  all_rep_list <- list()
+  min_g_num <- min(unlist(lapply(group_name_list, length)))
+  #
+  for(i in seq(n_test_reps)){
+    # subsample indices so equal number in each group
+    group_sub_names <- lapply(group_name_list, sample, size = min_g_num)
+    # generate genotype object for each group
+    tmp_genos <- lapply(group_sub_inds, function(x)
+      genos[indNames(genos) %in% x, ])
+    # find indices of SNPs missing allele 1 or allele 2 in each group
+    a1_missing_inds <- lapply(tmp_genos, function(x) which(glMean(x) == 1))
+    a2_missing_inds <- lapply(tmp_genos, function(x) which(glMean(x) == 0))
+    # Find private alleles in each population
+    a1_shared_alleles <- find_share_unique_inds(a1_missing_inds,
+      n_snps = unlist(lapply(tmp_genos, nLoc))[1])
+    a1_rep_list[[i]] <- a1_shared_alleles
+    #
+    a2_shared_alleles <- find_share_unique_inds(a2_missing_inds,
+      n_snps = unlist(lapply(tmp_genos, nLoc))[1])
+    a2_rep_list[[i]] <- a2_shared_alleles
+    #
+    # need to find SNPs that are not missing either a1 or a2 in any of the
+    #   populations
+    all_miss_inds <- unique(c(unlist(a1_missing_inds),
+      unlist(a2_missing_inds)))
+    n_snps <- unlist(lapply(tmp_genos, nLoc))[1]
+    all_shared <- setdiff(seq(n_snps), all_miss_inds)
+    all_rep_list[[i]] <- all_shared
+  }
+  tot_out_list[['a1']] <- a1_rep_list
+  tot_out_list[['a2']] <- a2_rep_list
+  tot_out_list[['all_shared']] <- all_rep_list
+  return(tot_out_list)
+}
+
+###########
+
 process_share_results <- function(share_result_list){
   # Calculate the mean values for unique/shared alleles across tests
   # INPUTS
