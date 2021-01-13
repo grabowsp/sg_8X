@@ -19,8 +19,11 @@
 ## Directory with Metadata
 * On NERSC
   * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X`
+* On HA
+  * `/home/f2p1/work/grabowsk/data/switchgrass`
 
 ## Metadata versions
   * `sg_8X_metadata_v1.0.csv`
     * First assembly of info. Includes Library ID's, Plant ID's, names used in the VCF, info from Jason's metadata, sequencing statistics, and ploidy info
-
+  * `sg_8X_metadata_v2.0.csv`
+    * Each JXXX accession assigned a unified accession ('UNI_ACC') to lump together accessions that are supposed to be of the same origin.

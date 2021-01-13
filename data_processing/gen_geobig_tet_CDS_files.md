@@ -270,7 +270,32 @@ $TOT_SNP
 
 ```
 
+### Generate 8X-only genlight file
+* on HA
+```
+# bash
+# source activate r_adegenet_env
 
+library(adegenet)
+
+in_file <- '/home/f2p1/work/grabowsk/data/switchgrass/genlight_files/GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds'
+
+out_file <- '/home/f2p1/work/grabowsk/data/switchgrass/genlight_files/GW.30kSNPs.tetrasomic.CDS.geobig_8X.genlight.rds'
+
+genos <- readRDS(in_file)
+
+oct_samps <- which(ploidy(genos) == 4)
+
+maf_cut <- 3/(length(oct_samps)*4)
+
+snps_to_keep <- which(glMean(genos[oct_samps, ]) > maf_cut & 
+  glMean(genos[oct_samps, ]) < (1-maf_cut))
+
+oct_genos <- genos[oct_samps, snps_to_keep]
+
+saveRDS(oct_genos, out_file)
+
+```
 
 
 

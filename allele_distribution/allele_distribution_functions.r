@@ -265,6 +265,40 @@ get_shared_alleles_multicutoff <- function(multicut_group_ind_list, genos,
   return(tmp_df)
 }
 
+#############
+
+get_shared_alleles_multicutoff_useNames <- function(multicut_group_name_list, 
+  genos, n_test_reps){
+  # Function to calculate the number of private/shared alleles at multiple
+  #    "purity" cutoffs
+  #  Adapted from 'get_shared_alleles_multicutoff'
+  # INPUTS
+  # multicut_group_name_list = list, each element being a list of indices for
+  #    samples belonging to different groups, using different "purity" cutoffs
+  #    for each element
+  # genos = genlight genotype object
+  # n_test_reps = number of replicates to run
+  # OUTPUTS
+  # list, with each element showing the mean value of private/shared alleles
+  #  in each population given the "purity" cutoff
+  ###############
+  tmp_res_list <- list()
+  for(gco in names(multicut_group_name_list)){
+    cutoff_val <- as.numeric(unlist(strsplit(gco, split = '_'))[2])
+    tmp_results <- gen_share_unique_useNames_list(
+      group_name_list = multicut_group_name_list[[gco]], genos = genos, 
+      n_test_reps = n_test_reps)
+    tmp_means <- process_share_results(tmp_results)
+    tmp_res_list[[gco]] <- tmp_means
+  }
+  tmp_df <- data.frame(group = names(tmp_res_list[[1]]), stringsAsFactors = F)
+  for(gco in names(tmp_res_list)){
+    tmp_col_name = paste('n_alleles_', gco, sep = '')
+    tmp_df[, tmp_col_name] <- tmp_res_list[[gco]]
+  }
+  return(tmp_df)
+}
+
 
 
 

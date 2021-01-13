@@ -13,8 +13,8 @@ allele_distr_func_file <- '/global/homes/g/grabowsp/tools/sg_8X/allele_distribut
 source(allele_distr_func_file)
 
 ### INPUT DATA ###
-geno_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds'
-# geno_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.500kSNPs.tetrasomic.CDS.geobig.genlight.rds'
+#geno_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig.genlight.rds'
+geno_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/GW.500kSNPs.tetrasomic.CDS.geobig.genlight.rds'
 genos <- readRDS(geno_file)
 
 # geobig admix results
@@ -41,21 +41,25 @@ samp_meta <- fread(meta_file)
 
 ### SET OUTPUTS ###
 
-out_file_1 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_3NI_vs_2SC.50kSNPs.tetrasomic.CDS.allelepatterns.rds'
+# with 50k SNPs
+#out_file_1 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_manycomps.50kSNPs.tetrasomic.CDS.allelepatterns.rds'
+#out_file_2 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_manycomps.50kSNPs.tetrasomic.CDS.allelepatterns_notcombined.rds'
+
+# with 500k SNPs
+#out_file_1 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_manycomps.500kSNPs.tetrasomic.CDS.allelepatterns.rds'
+#out_file_2 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_manycomps.500kSNPs.tetrasomic.CDS.allelepatterns_notcombined.rds'
+
+out_file_1 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_manycomps.500kSNPs.tetrasomic.CDS.allelepatterns_7groups.rds'
+out_file_2 <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_tet_vcfs/geobig_manycomps.500kSNPs.tetrasomic.CDS.allelepatterns_notcombined_7groups.rds'
+
 
 ### SET VARIABLES ###
 
 group_cutoff <- 0.9
 
+num_test_reps <- 25
+
 ###########
-
-#gb_k2_group_inds <- gen_admix_popind_list(gb_admix_k2_res, group_cutoff)
-#gb_k3_group_inds <- gen_admix_popind_list(gb_admix_k3_res, group_cutoff)
-
-#ni_k3_group_inds <- gen_admix_popind_list(ni_admix_k3_res, group_cutoff)
-
-#sc_k2_group_inds <- gen_admix_popind_list(sc_admix_k2_res, group_cutoff)
-#sc_k4_group_inds <- gen_admix_popind_list(sc_admix_k4_res, group_cutoff)
 
 gb_k2_group_names <- gen_admix_pop_samp_list(gb_admix_k2_res, group_cutoff)
 gb_k3_group_names <- gen_admix_pop_samp_list(gb_admix_k3_res, group_cutoff)
@@ -145,95 +149,125 @@ samp_meta[VCF_NAME %in% sc_k4_group_names[['g4']], .N, by=STATE]
 samp_meta[VCF_NAME %in% sc_k4_group_names[['g4']], .N, by=NQUIRE_PLOIDY]
 # Almost exclusively 4X, 2 8X
 
-gb_k2_groups_in_genos <- lapply(gb_k2_group_names, function(x)
-  which(indNames(genos) %in% x))
-gb_k3_groups_in_genos <- lapply(gb_k3_group_names, function(x)
-  which(indNames(genos) %in% x))
+# SET CONTRASTS:
 
+# 1) 4X, 3 groups: MW-4X, Gulf-4X, Atlantic_4X
+# 2) 3 groups all ploidy: MW, Gulf, Atlantic
+# 3) 4 groups, NorIn split by ploidy: MW-4X, NorInd-8X, Gulf, Atlantic
+# 4) 5 groups, NorIn split into 3: MW-4X, Cosmo-8X, ME-8X; Gulf, Atlantic
+# 5) 6 groups, SoCo split into 4, NorIn split by ploidy: MW-4X, NorInd-8X, 
+#        Gulf-TX, Gulf-MS, SoAtlantic, NoAtlantic
+# 6) 7 groups, NorIn split into 3, SoCo split into 4: MW-4X, Cosmo-8X, ME-8X,
+#        Gulf-TX, Gulf-MS, SoAtlantic, NoAtlantic 
 
+# 3 groups, only 4X
 
-three_group_list <- list()
+three_group_4X_list <- list()
+three_group_4X_list[['Atlantic_4X']] <- setdiff(gb_k3_group_names[['g1']], 
+  samp_meta[NQUIRE_PLOIDY == '8X' | NQUIRE_PLOIDY == '6X', VCF_NAME])
+three_group_4X_list[['Gulf_4X']] <- setdiff(gb_k3_group_names[['g2']], 
+  samp_meta[NQUIRE_PLOIDY == '8X' | NQUIRE_PLOIDY == '6X', VCF_NAME])
+three_group_4X_list[['MW_4X']] <- setdiff(gb_k3_group_names[['g3']],
+  samp_meta[NQUIRE_PLOIDY == '8X' | NQUIRE_PLOIDY == '6X', VCF_NAME])
+
+three_group_4X_allele_many <- gen_share_unique_useNames_list(
+  group_name_list = three_group_4X_list, genos = genos, 
+  n_test_reps = num_test_reps)
+three_group_4X_allele_res <- process_share_results(three_group_4X_allele_many)
+
+# 3 groups, all ploidy
+
+three_group_all_list <- list()
+three_group_all_list[['Atlantic_all']] <- gb_k3_group_names[['g1']] 
+three_group_all_list[['Gulf_all']] <- gb_k3_group_names[['g2']]
+three_group_all_list[['MW_all']] <- gb_k3_group_names[['g3']]
+
+three_group_all_allele_many <- gen_share_unique_useNames_list(
+  group_name_list = three_group_all_list, genos = genos, 
+  n_test_reps = num_test_reps)
+three_group_all_allele_res <- process_share_results(three_group_all_allele_many)
+
+# 4 groups, NorIn split by ploidy
 four_group_list <- list()
-tet_group_list <- list()
-eco_group_list <- list()
-eco_ploidy_list <- list()
+four_group_list[['Atlantic']] <- gb_k3_group_names[['g1']]
+four_group_list[['Gulf']] <- gb_k3_group_names[['g2']]
+four_group_list[['MW-4X']] <- intersect(gb_k3_group_names[['g3']], 
+  samp_meta[NQUIRE_PLOIDY == '4X', VCF_NAME])
+four_group_list[['NorthInland-8X']] <- intersect(gb_k3_group_names[['g3']],
+  samp_meta[NQUIRE_PLOIDY == '8X' | NQUIRE_PLOIDY == '6X', VCF_NAME])
 
-for(gco in c(0.9, 0.95, 0.99)){
-  co_name <- paste('cutoff_', gco, sep = '')
-  group_inds <- gen_admix_popind_list(admix_res, gco)
-  two_group_inds <- gen_admix_popind_list(admix_k2_res, gco)
-  #
-  # adjust so has informative names
-  three_group_inds <- list()
-  three_group_inds[['Atlantic']] <- group_inds[['g1']]
-  three_group_inds[['Gulf']] <- group_inds[['g2']]
-  three_group_inds[['Midwest']] <- group_inds[['g3']]
-  three_group_list[[co_name]] <- three_group_inds
-  ###
-  # split midwest into 4X and 8X
-  meta_8X_names <- samp_meta$VCF_NAME[which(samp_meta$NQUIRE_PLOIDY == '8X')]
-  mw_8X_inds <- intersect(which(admix_res$V1 %in% meta_8X_names), 
-    group_inds[['g3']])
-  four_group_inds <- list()
-  four_group_inds[['Atlantic']] <- group_inds[['g1']]
-  four_group_inds[['Gulf']] <- group_inds[['g2']]
-  four_group_inds[['MW4X']] <- setdiff(group_inds[['g3']], mw_8X_inds)
-  four_group_inds[['MW8X']] <- mw_8X_inds
-  four_group_list[[co_name]] <- four_group_inds
-  ###
-  # look only at 4X samples
-  atl_8X_inds <- intersect(which(admix_res$V1 %in% meta_8X_names),
-    group_inds[['g1']])
-  glf_8X_inds <- intersect(which(admix_res$V1 %in% meta_8X_names),
-    group_inds[['g2']])
-  tet_group_inds <- list()
-  tet_group_inds[['Atlantic4X']] <- setdiff(group_inds[['g1']], atl_8X_inds)
-  tet_group_inds[['Gulf4X']] <- setdiff(group_inds[['g2']], glf_8X_inds)
-  tet_group_inds[['MW4X']] <- setdiff(group_inds[['g3']], mw_8X_inds)
-  tet_group_list[[co_name]] <- tet_group_inds
-  # split into "ecotype"
-  eco_inds <- list()
-  eco_inds[['low']] <- two_group_inds[['g1']]
-  eco_inds[['up']] <- two_group_inds[['g2']]
-  eco_group_list[[co_name]] <- eco_inds
-  # "ecotype" with upland split by ploidy
-  up_8X_inds <- intersect(which(admix_k2_res$V1 %in% meta_8X_names),
-    eco_inds[['up']])
-  eco_ploidy_inds <- list()
-  eco_ploidy_inds[['low']] <- eco_inds[['low']]
-  eco_ploidy_inds[['up4X']] <- setdiff(eco_inds[['up']], up_8X_inds)
-  eco_ploidy_inds[['up8X']] <- up_8X_inds
-  eco_ploidy_list[[co_name]] <- eco_ploidy_inds
-}
+four_group_allele_many <- gen_share_unique_useNames_list(
+  group_name_list = four_group_list, genos = genos, 
+  n_test_reps = num_test_reps)
+four_group_allele_res <- process_share_results(four_group_allele_many)
 
-################
+# 5 groups, NorIn split into 3
+five_group_list <- list()
+five_group_list[['Atlantic']] <- gb_k3_group_names[['g1']]
+five_group_list[['Gulf']] <- gb_k3_group_names[['g2']]
+five_group_list[['MW-4X']] <- ni_k3_group_names[['g3']]
+five_group_list[['Cosmo-8X']] <- ni_k3_group_names[['g1']]
+five_group_list[['ME-8X']] <- ni_k3_group_names[['g2']]
 
-tet_group_allele_df <- get_shared_alleles_multicutoff(
-  multicut_group_ind_list = tet_group_list, genos = genos, n_test_reps = 10)
+five_group_allele_many <- gen_share_unique_useNames_list(
+  group_name_list = five_group_list, genos = genos, 
+  n_test_reps = num_test_reps)
+five_group_allele_res <- process_share_results(five_group_allele_many)
 
-three_group_allele_df <- get_shared_alleles_multicutoff(
-  multicut_group_ind_list = three_group_list, genos = genos, n_test_reps = 10)
+# 6 groups, SoCo split into 4, NorIn split into 2
+six_group_list <- list()
+six_group_list[['MW-4X']] <- intersect(gb_k3_group_names[['g3']],
+  samp_meta[NQUIRE_PLOIDY == '4X', VCF_NAME])
+six_group_list[['NorthInland-8X']] <- intersect(gb_k3_group_names[['g3']],
+  samp_meta[NQUIRE_PLOIDY == '8X' | NQUIRE_PLOIDY == '6X', VCF_NAME])
+six_group_list[['Gulf-TX']] <- sc_k4_group_names[['g1']]
+six_group_list[['Gulf-MS']] <- sc_k4_group_names[['g2']]
+six_group_list[['Atlantic-South']] <- sc_k4_group_names[['g4']]
+six_group_list[['Atlantic-North']] <- sc_k4_group_names[['g3']]
 
-four_group_allele_df <- get_shared_alleles_multicutoff(
-  multicut_group_ind_list = four_group_list, genos = genos, n_test_reps = 10)
+six_group_allele_many <- gen_share_unique_useNames_list(
+  group_name_list = six_group_list, genos = genos, 
+  n_test_reps = num_test_reps)
+six_group_allele_res <- process_share_results(six_group_allele_many)
 
-####
+# 7 groups, NorIn split into 3, SoCo split into 4
+seven_group_list <- list()
+seven_group_list[['MW-4X']] <- ni_k3_group_names[['g3']]
+seven_group_list[['Cosmo-8X']] <- ni_k3_group_names[['g1']]
+seven_group_list[['ME-8X']] <- ni_k3_group_names[['g2']]
+seven_group_list[['Gulf-TX']] <- sc_k4_group_names[['g1']]
+seven_group_list[['Gulf-MS']] <- sc_k4_group_names[['g2']]
+seven_group_list[['Atlantic-South']] <- sc_k4_group_names[['g4']]
+seven_group_list[['Atlantic-North']] <- sc_k4_group_names[['g3']]
 
-eco_group_allele_df <- get_shared_alleles_multicutoff(
-  multicut_group_ind_list = eco_group_list, genos = genos, n_test_reps = 10)
+seven_group_allele_many <- gen_share_unique_useNames_list(
+  group_name_list = seven_group_list, genos = genos, 
+  n_test_reps = num_test_reps)
+seven_group_allele_res <- process_share_results(seven_group_allele_many)
 
-eco_ploidy_allele_df <- get_shared_alleles_multicutoff(
-  multicut_group_ind_list = eco_ploidy_list, genos = genos, n_test_reps = 10)
+many_res_list <- list()
+combo_res_list <- list()
 
+many_res_list[['1North_2South_4X']] <- three_group_4X_allele_many
+combo_res_list[['1North_2South_4X']] <- three_group_4X_allele_res
 
-tot_result_list <- list()
-tot_result_list[['tet_samps']] <- tet_group_allele_df
-tot_result_list[['three_groups']] <- three_group_allele_df
-tot_result_list[['four_groups']] <- four_group_allele_df
-tot_result_list[['eco_groups']] <- eco_group_allele_df
-tot_result_list[['eco_ploidy']] <- eco_ploidy_allele_df
+many_res_list[['1North_v_2South_all']] <- three_group_all_allele_many
+combo_res_list[['1North_v_2South_all']] <- three_group_all_allele_res
 
-saveRDS(tot_result_list, file = out_file)
+many_res_list[['North4X_North8X_2South']] <- four_group_allele_many
+combo_res_list[['North4X_North8X_2South']] <- four_group_allele_res
+
+many_res_list[['3North_2South']] <- five_group_allele_many
+combo_res_list[['3North_2South']] <- five_group_allele_res
+
+many_res_list[['North4X_North8X_4South']] <- six_group_allele_many
+combo_res_list[['North4X_North8X_4South']] <- six_group_allele_res
+
+many_res_list[['3North_4South']] <- seven_group_allele_many
+combo_res_list[['3North_4South']] <- seven_group_allele_res
+
+saveRDS(combo_res_list, file = out_file_1)
+saveRDS(many_res_list, file = out_file_2)
 
 quit(save = 'no')
 
