@@ -30,3 +30,12 @@
 * VCF sample name list
   * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/geobig_NorthInland_names.txt`
 
+## `nat_filt_v2`
+* 706 samples
+* `geobig` samples that were further filtered based on clustering in NJ joining tree using `allsamps`
+  * 115 samples removed
+  * `nat_filt_1` had 5 fewer samples removed
+* VCF sample name list
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/nat_filt_v2_names.txt`
+
+

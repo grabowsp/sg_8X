@@ -101,7 +101,6 @@ for CHR_NUM in 01;
   done
 done
 ```
-# CONTINUE FROM HERE
 ### Concatenat .tped files
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds
@@ -142,20 +141,102 @@ cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds
 plink --bfile GW_all_samps --distance square '1-ibs' --extract GW_all_samps_ld0.3.prune.in --out GW_all_samps_ld0.3_symmetric
 ```
 
+## R Analysis
+### Location of important Files
+* Distance matrix
+  * '/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/GW_all_samps_ld0.3_symmetric.mdist'
+* Sample order
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/GW_all_samps_ld0.3_symmetric.mdist.id`
+* Metadata
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/sg_8X_metadata_v2.0.csv`
+* geobig samp names
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/geo_big_names.txt`
+* geobig K=3 ADMIXTURE results
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/GW_50k_geobig.3.results.txt`
+* NorthInland (upland) K=3 ADMIXTURE results
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_NorthInland_admix/GW_50k_geobigNorthInland.3.results.txt`
+
+### NJ Tree using only Natural Samples
+* R script
+  * `all_samp_filtering_geo_nj_trees.r`
+* NJ trees
+  * Colored by ploidy:
+    * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/geobig_NJ_tree_ploidy.pdf`
+  * Colored by gene pool:
+    * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/geobig_NJ_tree_genepools.pdf`
+
+### Big NJ Tree using all samples and UNI_ACC as labels
+* R script
+  * `all_samp_big_tree_for_filtering.r`
+* Easiest-to-interpret NJ tree:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/allsamp_NJ_tree_combolabel_nolength.pdf`
+* Annotated NJ tree:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/allsamp_NJ_tree_combolabel_nolength_Annotation.pdf`
+### Explore the all_sample trees
+```
+module load python/3.7-anaconda-2019.10
+module swap PrgEnv-intel PrgEnv-gnu
+source activate R_tidy
+
+### LOAD PACKAGES ###
+library(data.table)
+library(ape, lib.loc = '/global/homes/g/grabowsp/tools/r_libs')
+library(phangorn, lib.loc = '/global/homes/g/grabowsp/tools/r_libs')
+
+### INPUT DATA ###
+meta_file <- '/global/homes/g/grabowsp/data/switchgrass/metadata_8X/sg_8X_metadata_v2.0.csv'
+samp_meta <- fread(meta_file)
+
+dist_res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/GW_all_samps_ld0.3_symmetric.mdist'
+dist_res <- fread(dist_res_file, header = F)
+dist_ids <- fread(paste(dist_res_file, 'id', sep = '.'), header = F)
+dist_mat <- as.matrix(dist_res)
+colnames(dist_mat) <- rownames(dist_mat) <- dist_ids$V1
+
+admix_res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_admix/GW_50k_geobig.3.results.txt'
+admix_res_0 <- fread(admix_res_file)
+# 1(V2) = Atlantic; 2(V3) = Gulf; 3(V4) = Midwest
+
+ni_admix_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/geobig_NorthInland_admix/GW_50k_geobigNorthInland.3.results.txt'
+ni_res_0 <- fread(ni_admix_file)
+# 1(V2) = 8X West; 2(V3) = 8X East; 3(V4) = 4X
+#####
+
+# See if all samples from accession group together
+samp_meta[UNI_ACC == 'PI_674677', c(VCF_NAME, NQUIRE_PLOIDY)]
+
+samp_name <- 'J662.C'
+# look at the similarity/distance to closest samples
+sort(dist_mat[samp_name,], decreasing = F)[1:11]
+
+# Look at Overall K=3 ancestry
+admix_res_0[grep(samp_name, admix_res_0$V1), ]
+
+# Look at North-Inland K=3 ancestry
+ni_res_0[grep(samp_name, ni_res_0$V1),]
+
+```
+
+## File with Notes about Sample Filtering
+* File location:
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/SG_8X_Problematic_Samples.tsv`
+* Includes:
+  * "Description": My notes about the samples
+  * "PPG_NATIVE": My thoughts about if the sample is natural
+    * "Did genotype get to location without human intervention"
+    * T = Native; F = Not native
+  * "PPG_CONTAMINANT": My thoughts about if sample represents the source in the metadata
+    * "Does genotype represent the population that was collected"
+    * T = Likely contaminant; M = Maybe a contaminant, but hard to tell; F = not a contaminant
+    * Some genotypes might be non-native but NOT contaminants; for example, if the genotype was moved across country but then collected from natural sites: the genotypes did not arrive without human help, but they represent the genotypes in collection site.
+    * Possible sources of contamination: seed contamination; multiple genotypes in common gardens where samples are collected; sample switches in field; sample switches when making DNA; bioinformatic sample switches 
 
 
 
 
-* Generate tped files
-* Generate plink file using all chromosomes
-* Prune by LD
-* Calculate distance matrix
 
-
-
-
-## Test on HA while NERSC is down
-## Overview
+## Preliminary Test on HA while NERSC is down
+### Overview
 * Test process for Chr01K on HA, then do entire process on NERSC
   * I had trouble consistently accessing the original VCFs from Sujan's scratch space, so decided to just test using one chromosome to save time and preserve space
   * I needed to copy the vcf to my directory, so doing that for all 18 chromosomes would take up too much space
@@ -361,45 +442,5 @@ sort(ld_sym_dist_mat[ld_sym_dist_ids$V1 == 'J515.B', ])[1:10]
 # 4) Search by ploidy - search for samples that 
 # Also try adding a "unified" accession so that all samples that should be
 #  from the same accession but different sources can be combined
-
-
-
-
-
-## Generate all_samps plink objects
-* Directory on HA for results
-  * `/home/f2p1/work/grabowsk/data/switchgrass/plink_files/all_samps`
-* Directory on HA with original VCF files
-  * `/home/smamidi_scratch/Pvirgatum_V5/files_share/Pvirgatum_1070g_variants/`
-
-```
-bash
-
-source activate plink_1.9_env
-
-# start with single chromosome
-VCF_DIR=/home/smamidi_scratch/Pvirgatum_V5/files_share/Pvirgatum_1070g_variants/
-VCF_FILE_SHORT=Pvirgatum_1070g_Chr01K.snp.poly.sort.norepeats.vcf.gz
-VCF_FILE=$VCF_DIR$VCF_FILE_SHORT
-
-OUT_DIR=/home/f2p1/work/grabowsk/data/switchgrass/plink_files/all_samps
-
-SAMP_FILE=/home/f2p1/work/grabowsk/data/switchgrass/plink_files/all_samp_names_forPlink.txt
-CDS_POS_FILE=/home/f2p1/work/grabowsk/data/switchgrass/plink_files/sg_v5_CDS.bed
-
-
-
-
-
-cd $OUT_DIR
-
-plink --vcf $VCF_FILE --double-id --keep $SAMP_FILE \
---extract 'range' $CDS_POS_FILE
-
-
-
-```
-
-
 
 

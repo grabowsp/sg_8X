@@ -175,6 +175,41 @@ cd $DATA_DIR
 Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
 $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
 ```
+### Generate 200k SNP object
+* `/global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs/GW.200kSNPs.tetrasomic.CDS.allsamps.genlight.rds`
+#### Calculate sub-sampling rate
+* in R
+```
+# module load python/3.7-anaconda-2019.07
+# source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+library(data.table)
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs/allsamps.SNPcount.txt'
+res <- fread(res_file)
+
+goal_n <- 2e5
+
+goal_n / sum(res$nSNPs)
+# [1] 0.02009
+```
+### Generate subsampled `genlight` object
+* Is faster to just run in interactive session
+####
+```
+module load python/3.7-anaconda-2019.10
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
+
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs
+FILE_SUB_SHORT=allsamps.genlight.rds
+OUT_SHORT='GW.200kSNPs.tetrasomic.CDS.allsamps.genlight.rds'
+PER_SUBSAMP=0.025
+TOT_SNP=2e5
+
+cd $DATA_DIR
+
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
+```
 
 
 
