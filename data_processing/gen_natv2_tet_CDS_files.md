@@ -1,6 +1,6 @@
-# Steps for making `geobig_southcoastal` genotype files
+# Steps for making `natv2` genotype files
 
-## Generate `geobig_northinland` CDS VCFs
+## Generate `natv2` CDS VCFs
 ### Location of files
 * Result directory
   * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs`
@@ -56,8 +56,6 @@ for CHROM in 01K 01N 02K 02N 03K 03N 04K 04N 05K 05N;
 
 ```
 
-# CONTINUE FROM HERE #
-
 ## Generate sample header file for VCFs
 * File name:
   * `INSERT_FILE_NAME`
@@ -77,8 +75,8 @@ tail -1 > CDS.tetrasomic.$SAMPSET'.vcf.sampheader.txt'
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs
 
-sbatch gen_geobigSouthCoastal_Chr01_05_genlight.sh
-sbatch gen_geobigSouthCoastal_Chr06_09_genlight.sh
+sbatch gen_natv2_Chr01_05_genlight.sh
+sbatch gen_natv2_Chr06_09_genlight.sh
 
 ```
 ### Example script
@@ -104,7 +102,7 @@ DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/
 
 cd $DATA_DIR
 
-HEADER_FILE=INSERT_HEADER_FILE
+HEADER_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/CDS.tetrasomic.natv2.vcf.sampheader.txt
 
 SAMPSET=natv2
 
@@ -123,6 +121,8 @@ for CHR_N in 01 02 03 04 05;
 
 ```
 
+####### CONTINUE HERE ###########
+
 ## Generate genome-wide subsampled `genlight` object 
 * Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
 * Final file:
@@ -131,12 +131,12 @@ for CHR_N in 01 02 03 04 05;
 * SNP count file
   * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs/geobig_southcoastal.SNPcount.txt`
 ```
-module load python/3.7-anaconda-2019.07
+module load python/3.7-anaconda-2019.10
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs
-FILE_SUB_SHORT=geobig_southcoastal.genlight.rds
-OUT_SHORT=geobig_southcoastal
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs
+FILE_SUB_SHORT=natv2.genlight.rds
+OUT_SHORT=natv2
 
 cd $DATA_DIR
 
@@ -150,13 +150,13 @@ $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
 # source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
 library(data.table)
-res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs/geobig_southcoastal.SNPcount.txt'
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/natv2.SNPcount.txt'
 res <- fread(res_file)
 
 goal_n <- 5e4
 
 goal_n / sum(res$nSNPs)
-# [1] 0.008424916
+# [1] 0.00605353
 ```
 ### Generate subsampled `genlight` object
 * Is faster to just run in interactive session
@@ -165,10 +165,10 @@ goal_n / sum(res$nSNPs)
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs
-FILE_SUB_SHORT=geobig_southcoastal.genlight.rds
-OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.geobig_southcoastal.genlight.rds'
-PER_SUBSAMP=0.009
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs
+FILE_SUB_SHORT=natv2.genlight.rds
+OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.natv2.genlight.rds'
+PER_SUBSAMP=0.007
 TOT_SNP=5e4
 
 cd $DATA_DIR

@@ -10,7 +10,7 @@
 
 ## Overview
 * Directory with files and results
-  * '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix'
+  * '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix'
 
 ## Generate tped file with VCFtools
 ### What we need
@@ -28,14 +28,14 @@
 library(adegenet)
 
 ### LOAD INPUTS ###
-geno_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs/GW.200kSNPs.tetrasomic.CDS.allsamps.genlight.rds'
+geno_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.natv2.genlight.rds'
 
 genos <- readRDS(geno_file)
 
 ### SET OUTPUTS ###
-out_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/'
+out_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/'
 
-out_short <- 'allsamps_200k_snps.txt'
+out_short <- 'natv2_50k_snps.txt'
 
 out_full <- paste(out_dir, out_short, sep = '')
 
@@ -54,11 +54,10 @@ write.table(snp_df, file = out_full, quote = F, sep = '\t', row.names = F,
 ### Generate tped file with VCFtools
 #### Submit jobs
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
 
-sbatch gen_allsamp_200k_tped_Chr01_05.sh
-sbatch gen_allsamp_200k_tped_Chr06_09.sh
-
+sbatch gen_natv2_50k_tped_Chr01_05.sh
+sbatch gen_natv2_50k_tped_Chr06_09.sh
 ```
 ### Example script
 ```
@@ -79,17 +78,17 @@ sbatch gen_allsamp_200k_tped_Chr06_09.sh
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/gen_bioinformatics
 
-OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix
+OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
 
 VCF_FILE_PRE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/orig_sujan_files/Pvirgatum_1070g_
 
 VCF_FILE_SUF=.snp.sort.norepeats.vcf.gz
 
-SUB_PREFIX=_allsamps_200k
+SUB_PREFIX=_natv2_50k
 
-POS_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/allsamps_200k_snps.txt
+POS_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/natv2_50k_snps.txt
 
-SAMP_FILE=/global/homes/g/grabowsp/data/switchgrass/metadata_8X/all_samp_names.txt
+SAMP_FILE=/global/homes/g/grabowsp/data/switchgrass/metadata_8X/nat_filt_v2_names.txt
 
 CHROM_MAP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/plink_chr_name_map.txt
 
@@ -103,21 +102,22 @@ for CHRNAME in 01K 01N 02K 02N 03K 03N 04K 04N 05K 05N;
     --keep $SAMP_FILE --plink-tped --chrom-map $CHROM_MAP_FILE;
   done
 ```
+
 #### Concatenate .tped files
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
 
-cat *tped > GW_allsamps_200k.tped
-cp Chr01K_allsamps_200k.tfam GW_allsamps_200k.tfam
+cat *tped > GW_natv2_50k.tped
+cp Chr01K_natv2_50k.tfam GW_natv2_50k.tfam
 ```
 ## Generte .bed
 ```
 module load python/3.7-anaconda-2019.10
 source activate plink_1_env
 
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix 
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix 
 
-plink --tfile GW_allsamps_200k --maf 0.0001 --make-bed --out GW_200k_allsamps
+plink --tfile GW_natv2_50k --maf 0.0001 --make-bed --out GW_50k_natv2
 ```
 ## Run ADMIXTURE
 * Example submit script
@@ -139,11 +139,11 @@ plink --tfile GW_allsamps_200k --maf 0.0001 --make-bed --out GW_200k_allsamps
 module load python/3.7-anaconda-2019.10
 source activate /global/homes/g/grabowsp/.conda/envs/admixture_env
 
-OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix
+OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
 
 cd $OUT_DIR
 
-IN_FILE=GW_200k_allsamps.bed
+IN_FILE=GW_50k_natv2.bed
 
 K_NUM=1
 
@@ -154,29 +154,29 @@ admixture --cv=$CV_NUM $IN_FILE $K_NUM | tee log${K_NUM}.out
 ```
 ### Make additional submit files
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
  
 for KN in {2..10};
 do
-sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_allsamps_admixture_K1.sh > \
-run_allsamps_admixture_K$KN'.sh';
+sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_natv2_admixture_K1.sh > \
+run_natv2_admixture_K$KN'.sh';
 done
 
 ```
 ### Run jobs
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix 
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix 
 
 for KN in {1..10};
 do
-sbatch run_allsamps_admixture_K$KN'.sh';
+sbatch run_natv2_admixture_K$KN'.sh';
 done
 ```
 
 ## Analyze CV error
 ### Generate CV error file
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
 
 for K in {1..10};
   do
@@ -193,7 +193,7 @@ for K in {1..10};
 library(data.table)
 library(tidyverse)
 
-data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/'
+data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/'
 
 cv_val_file <- paste(data_dir, 'cv_error_vals.txt', sep = '')
 cv_vals <- fread(cv_val_file, header = F)
@@ -209,9 +209,9 @@ gg_cv <- ggplot(CV_dt, aes(x = K_num, y = CV_vals)) +
   geom_point() +
   scale_x_continuous(breaks = seq(10)) +
   xlab('K') + ylab('CV error') +
-  ggtitle('ADMIXTURE CV error for allsamps\nsamps and 200k SNPs')
+  ggtitle('ADMIXTURE CV error for nat_v2 \nsamps and 50k SNPs')
 
-out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/allsamps_200k_CV_error.pdf'
+out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/natv2_50k_CV_error.pdf'
 
 pdf(out_file, width = 4.5, height = 4.5)
 gg_cv
@@ -221,29 +221,30 @@ dev.off()
 ## Generate barplots
 ### K = 2
 * R script for K=2
-  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/allsamp_admix/allsamps_admix_K2_barplot.r`
+  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2_admix/natv2_admix_K2_barplot.r`
 * Figure
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/GW_200k_allsamps.2.ADMIXTURE.memb.pdf`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.2.ADMIXTURE.memb.pdf`
 ### K = 3
 * R script for K=3
-  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/allsamp_admix/allsamps_admix_K3_barplot.r`
+  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2_admix/natv2_admix_K3_barplot.r`
 * Figure
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/GW_200k_allsamps.3.ADMIXTURE.memb.pdf`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.3.ADMIXTURE.memb.pdf`
 
 ## Generate Results File
 * File paths
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/GW_200k_allsamps.2.results.txt`
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/GW_200k_allsamps.3.results.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.2.results.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.3.results.txt`
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/
 
-cut -d " " -f 1 GW_200k_allsamps.fam | \
-paste -d " " - GW_200k_allsamps.2.Q > \
-GW_200k_allsamps.2.results.txt
+cut -d " " -f 1 GW_50k_natv2.fam | \
+paste -d " " - GW_50k_natv2.2.Q > \
+GW_50k_natv2.2.results.txt
 
-cut -d " " -f 1 GW_200k_allsamps.fam | \
-paste -d " " - GW_200k_allsamps.3.Q > \
-GW_200k_allsamps.3.results.txt
+cut -d " " -f 1 GW_50k_natv2.fam | \
+paste -d " " - GW_50k_natv2.3.Q > \
+GW_50k_natv2.3.results.txt
+
 ```
 
 

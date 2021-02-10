@@ -107,6 +107,9 @@ for(gpname in names(gp_col_vec)){
 allsamp_dist <- as.dist(dist_mat)
 allsamp_nj <- NJ(allsamp_dist)
 
+allsamp_nj_tree_out <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/allsamp_NJ_tree.newick'
+write.tree(allsamp_nj, file = allsamp_nj_tree_out)
+
 allsamp_sampname_outfile <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/samp_filtering/all_samp_tpeds/allsamp_NJ_tree_sampnames.pdf'
 
 pdf(file = allsamp_sampname_outfile, height = 50, width = 10)
