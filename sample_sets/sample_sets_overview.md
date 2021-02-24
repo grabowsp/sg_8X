@@ -37,5 +37,4 @@
   * `nat_filt_1` had 5 fewer samples removed
 * VCF sample name list
   * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/nat_filt_v2_names.txt`
-  * ``
 

@@ -1,4 +1,4 @@
-# Steps for running ADMIXTURE on allsamp samples
+# Steps for running ADMIXTURE on natv2 samples
 
 ## Steps
 * generate tped files with VCF tools
@@ -15,7 +15,7 @@
 ## Generate tped file with VCFtools
 ### What we need
 * list of SNPs that we want to keep - make using genlight object
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/allsamps_admix/allsamps_200k_snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/natv2_50k_snps.txt`
 * "Chromosome map" - chromosome name to integer name map
   * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/plink_chr_name_map.txt`
 
@@ -247,5 +247,15 @@ GW_50k_natv2.3.results.txt
 
 ```
 
+## Convert TPED to PED to try with PGDSpider to convert to NEXUS
+* note couldn't get PGDSpider to install because of java issues, so didn't move forward
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/
 
+module load python/3.7-anaconda-2019.10
+source activate plink_1_env
+
+plink --tfile GW_natv2_50k --maf 0.0001 --recode --out GW_50k_natv2
+
+```
 
