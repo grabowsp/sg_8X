@@ -47,8 +47,8 @@ kept_snp_out <- paste(data_dir, chr_name,
   '.ancestral_AP13_kept_SNP_positions.txt', sep = '')
 
 ### SET VARIABLES ###
-dip_hom_ref_vcf <- '2/0:20,0'
-dip_hom_alt_vcf <- '0/2:0,20'
+dip_hom_ref_vcf <- '0/0:20,0'
+dip_hom_alt_vcf <- '1/1:0,20'
 
 tet_hom_ref_vcf <- '4/0:20,0'
 tet_hom_alt_vcf <- '0/4:0,20'
