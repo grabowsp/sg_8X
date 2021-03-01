@@ -60,9 +60,11 @@ for CHR_NUM in {01..09};
 module load python/3.7-anaconda-2019.07
 source activate adegenet_2_env
 
-data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/diversity_analysis/geobig_diversity/'
+library(adegenet)
 
-file_suf <- '.geobig.CDS.HETvals.rds'
+data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/diversity_analysis/allsamps_diversity/'
+
+file_suf <- '.allsamps.CDS.HETvals.rds'
 
 res_file_vec <- system(paste('ls ', data_dir, '*HETvals.rds', sep = ''),
   intern = T)
@@ -116,7 +118,7 @@ samp_name_vec <- c(names(tet_hom_norm), names(oct_hom_norm))
 het_df <- data.frame(samp_name = samp_name_vec, het_raw = raw_het, 
   het_corrected = cor_het, stringsAsFactors = F)
 
-out_file <- paste(data_dir, 'geobig.heterozygosity_v1.txt', sep = '')
+out_file <- paste(data_dir, 'allsamps.heterozygosity_v1.txt', sep = '')
 write.table(het_df, file = out_file, quote = F, sep = '\t', 
   row.names = F, col.names = T)
 

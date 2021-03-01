@@ -113,11 +113,13 @@ source activate R_tidy
 
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs
 
-Rscript /global/homes/g/grabowsp/tools/sg_8X/phylogenetics/ancestral_genos/gen_ancestral_geno_files.r Chr01K
+#Rscript /global/homes/g/grabowsp/tools/sg_8X/phylogenetics/ancestral_genos/gen_ancestral_geno_files.r Chr01K
 
-Rscript /global/homes/g/grabowsp/tools/sg_8X/phylogenetics/ancestral_genos/gen_ancestral_geno_files.r Chr01N
+#Rscript /global/homes/g/grabowsp/tools/sg_8X/phylogenetics/ancestral_genos/gen_ancestral_geno_files.r Chr01N
 
-for CHR_NUM in {02..09};
+#Rscript /global/homes/g/grabowsp/tools/sg_8X/phylogenetics/ancestral_genos/gen_ancestral_geno_files.r Chr02K
+
+for CHR_NUM in {01..09};
   do
   for CHR_LET in K N;
     do
@@ -133,8 +135,8 @@ cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/allsamps_tet_vcfs
 
 head -633 Chr09N.tetrasomic.CDS.allsamps.vcf_00 > tet_VCF_header_full.txt
 
-#for CHR_NUM in {02..09};
-for CHR_NUM in 01;
+for CHR_NUM in {01..09};
+#for CHR_NUM in 01;
   do
   for CHR_LET in K N;
     do
@@ -146,8 +148,8 @@ for CHR_NUM in 01;
     done;
   done
 
-#for CHR_NUM in {02..09};
-for CHR_NUM in 01;
+for CHR_NUM in {01..09};
+#for CHR_NUM in 01;
   do
   for CHR_LET in K N;
     do
