@@ -19,7 +19,11 @@ ancestral_file <- paste(data_dir, chr_name, '.sg_8x_ancestral_genos.txt',
   sep = '')
 ancest_info <- fread(ancestral_file, header = F)
 colnames(ancest_info) <- c('CHR', 'POS', 'ANCESTRAL', 'AP13')
-ancest_info <- ancest_info[-which(duplicated(ancest_info$POS))]
+
+dup_ancest_inds <- which(duplicated(ancest_info$POS))
+if(length(dup_ancest_inds) > 0){
+  ancest_info <- ancest_info[-which(duplicated(ancest_info$POS))]
+}
 
 ra_file <- paste(data_dir, chr_name, '.ancestral_snp_ref_alt.txt', sep = '')
 
