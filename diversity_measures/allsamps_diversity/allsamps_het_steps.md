@@ -52,8 +52,6 @@ for CHR_NUM in {01..09};
   done;
 ```
 
-###### CONITNUE FROM HERE ##############
-
 ## Aggregate homozygosity for all chromosomes
 ### Test
 ```
