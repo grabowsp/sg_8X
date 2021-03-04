@@ -353,12 +353,10 @@ quit(save = 'no')
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_ancestral_tet_vcfs/sub100k_vcfs
 
 sbatch gen_natv2_ancest_subfiles_01_10.sh
-
-
+sbatch gen_natv2_ancest_subfiles_11_50.sh
+sbatch gen_natv2_ancest_subfiles_51_100.sh
 
 ```
-
-
 #### Example script
 ```
 #!/bin/bash
@@ -424,12 +422,6 @@ for SNPSET in {0001..0010};
     done;
   gzip $VCF_OUT;
   done;
-
-
-
-
-
-
 ```
 
 
