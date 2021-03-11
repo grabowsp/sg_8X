@@ -8,6 +8,8 @@
 * R script used for generating distance matrices
   * `/global/homes/g/grabowsp/tools/sg_8X/dist_based_analysis/generate_dist_mat_tet_in.r`
 
+### Polyploid genotypes
+* 4X use disomic genotypes, 8X (and 6X) use tetrasomic genotypes
 ## Test script
 ```
 module load python/3.7-anaconda-2019.10
@@ -25,12 +27,17 @@ OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/dist_analysis/natv2_ancestra
 Rscript $RSC $IN_VCF $COMP_TYPE $OUT_DIR
 
 ```
-## Run for 2-10
+## Run for 2-100
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/dist_analysis/natv2_ancestral_sub_dist
 
 sbatch gen_poly_dist_02_10.sh
 sbatch gen_poly_dist_11_20.sh
+
+sbatch gen_poly_dist_21_40.sh
+sbatch gen_poly_dist_41_60.sh
+sbatch gen_poly_dist_61_80.sh
+sbatch gen_poly_dist_81_100.sh
 
 ```
 ### Example script
@@ -71,43 +78,23 @@ for SETNUM in {0002..0010};
   done;
 ```
 
-### Generate list of NJ trees to later analyze with `ape` package
+## Diploid genotypes
+* all samples use disomic genotypes
+### Submit scripts
 ```
-### LOAD MODULES ###
-# module load python/3.7-anaconda-2019.10
-# module swap PrgEnv-intel PrgEnv-gnu
-# source activate R_tidy
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/dist_analysis/natv2_ancestral_sub_dist
 
-### LOAD PACKAGES ###
-library(data.table)
-library(ape, lib.loc = '/global/homes/g/grabowsp/tools/r_libs')
-library(phangorn, lib.loc = '/global/homes/g/grabowsp/tools/r_libs')
-
-### INPUT DATA ###
-dist_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/dist_analysis/natv2_ancestral_sub_dist/'
-
-dist_files <- system(paste('ls ', dist_dir, '*rds', sep = ''), intern = T)
-
-dist_list <- list()
-for(df in seq(length(dist_files))){
-  tmp_data <- readRDS(dist_files[df])
-  dist_list[[df]] <- tmp_data[['euclidean_dist']]
-}
-
-### SET OUTPUT ###
-out_file <- paste(dist_dir, 'natv2.100k.NJtree.list.v1.rds', sep = '')
-
-################
-
-tree_list <- lapply(dist_list, function(x) root(nj(x), 
-                                                outgroup = 'ANCESTRAL_TET_GENO',
-                                                resolve.root = T))
-
-saveRDS(tree_list, file = out_file)
-
+sbatch gen_dis_dist_01_50.sh
+sbatch gen_dis_dist_51_100.sh
 ```
 
+## Tetraploid genotypes
+* all samples use tetraploid genotypes
+### Submit scripts
+```
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/dist_analysis/natv2_ancestral_sub_dist
 
-
-
+sbatch gen_tet_dist_01_50.sh
+sbatch gen_tet_dist_51_100.sh
+```
 
