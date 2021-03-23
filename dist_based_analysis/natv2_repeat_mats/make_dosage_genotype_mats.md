@@ -26,5 +26,24 @@ for SETNUM in {0001..0010};
   Rscript $RSC $IN_VCF $COMP_TYPE $OUT_DIR;
   done;
 
+COMP_TYPE=tetraploid
+
+for SETNUM in {0001..0010};
+  do
+  echo $SETNUM;
+  IN_VCF=$VCF_PRE$SETNUM'.vcf.gz';
+  Rscript $RSC $IN_VCF $COMP_TYPE $OUT_DIR;
+  done;
+
+COMP_TYPE=polyploid
+
+for SETNUM in {0001..0010};
+  do
+  echo $SETNUM;
+  IN_VCF=$VCF_PRE$SETNUM'.vcf.gz';
+  Rscript $RSC $IN_VCF $COMP_TYPE $OUT_DIR;
+  done;
+
+
 
 ```
