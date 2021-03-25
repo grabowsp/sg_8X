@@ -23,6 +23,7 @@ dip_mat_1_raw <- readRDS(dip_mat_file)
 dip_mat_1 <- dip_mat_1_raw[, -which(colnames(dip_mat_1_raw) %in% 
                                       c('ANCESTRAL_TET_GENO', 'REF_TET_GENO'))]
 
+
 tet_mat_file <- '/Users/grabowsk/data/sg_8X_analysis/genotype_mats/GW.natv2.ancestral.tet.100k.0001.gz_tetraploid_geno_dosage_mat.rds'
 tet_mat_1_raw <- readRDS(tet_mat_file)
 tet_mat_1 <- tet_mat_1_raw[, -which(colnames(tet_mat_1_raw) %in% 
