@@ -59,30 +59,26 @@ for CHROM in 01K 01N 02K 02N 03K 03N 04K 04N 05K 05N;
 
 ```
 
-######## CONTINUE FROM HERE #############
-
-
 ## Generate sample header file for VCFs
 * File name:
   * `INSERT_FILE_NAME`
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs/
 
-SAMPSET=natv2
+SAMPSET=natv2filt
 
 gunzip -kc Chr01K.tetrasomic.CDS.$SAMPSET'.vcf.gz' | head -634 | \
 tail -1 > CDS.tetrasomic.$SAMPSET'.vcf.sampheader.txt'
 ```
 
 ## Generate `genlight` object for each chromosome
-* If want 6+ copies of the Minor Allele, then use 0.002 as MAF
-  * this is pretty permissive because assumes all samps are 8X
+* I already set a 5+ minor allele count when choosing SNPs to include
 ### Submit scripts
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs
 
-sbatch gen_natv2_Chr01_05_genlight.sh
-sbatch gen_natv2_Chr06_09_genlight.sh
+sbatch gen_natv2filt_Chr01_05_genlight.sh
+sbatch gen_natv2filt_Chr06_09_genlight.sh
 
 ```
 ### Example script
@@ -104,15 +100,15 @@ sbatch gen_natv2_Chr06_09_genlight.sh
 module load python/3.7-anaconda-2019.10
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs/
 
 cd $DATA_DIR
 
-HEADER_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/CDS.tetrasomic.natv2.vcf.sampheader.txt
+HEADER_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs/CDS.tetrasomic.natv2filt.vcf.sampheader.txt
 
-SAMPSET=natv2
+SAMPSET=natv2filt
 
-MAF_CUT=0.002
+MAF_CUT=0.00001
 
 for CHR_N in 01 02 03 04 05;
   do
@@ -127,9 +123,10 @@ for CHR_N in 01 02 03 04 05;
 
 ```
 
-####### CONTINUE HERE ###########
+######## CONTINUE FROM HERE ##########
 
-## Generate genome-wide subsampled `genlight` object 
+
+## Generate genome-wide subsampled `genlight` objects
 * Subsample SNPs from all chromosomes to get desired number of genome-wide SNPs
 * Final file:
   `/global/cscratch1/sd/grabowsp/sg_8X_scratch/geobig_southcoastal_tet_vcfs/GW.50kSNPs.tetrasomic.CDS.geobig_southcoastal.genlight.rds`
@@ -140,9 +137,9 @@ for CHR_N in 01 02 03 04 05;
 module load python/3.7-anaconda-2019.10
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs
-FILE_SUB_SHORT=natv2.genlight.rds
-OUT_SHORT=natv2
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs
+FILE_SUB_SHORT=natv2filt.genlight.rds
+OUT_SHORT=natv2filt
 
 cd $DATA_DIR
 
@@ -150,31 +147,38 @@ Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype
 $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT
 ```
 ### Calculate sub-sampling rate
+* Should sample at rate higher than the calculated sub-sampling rate
 * in R
 ```
 # module load python/3.7-anaconda-2019.07
 # source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
 library(data.table)
-res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs/natv2.SNPcount.txt'
+res_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs/natv2filt.SNPcount.txt'
 res <- fread(res_file)
 
+# 50k
 goal_n <- 5e4
-
 goal_n / sum(res$nSNPs)
-# [1] 0.00605353
+# [1] 0.01082357
+
+# 100k
+goal_n <- 1e5
+goal_n / sum(res$nSNPs)
+# [1] 0.02164713
+
 ```
 ### Generate subsampled `genlight` object
 * Is faster to just run in interactive session
-####
+#### 50k SNPs
 ```
 module load python/3.7-anaconda-2019.07
 source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
-DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2_tet_vcfs
-FILE_SUB_SHORT=natv2.genlight.rds
-OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.natv2.genlight.rds'
-PER_SUBSAMP=0.007
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs
+FILE_SUB_SHORT=natv2filt.genlight.rds
+OUT_SHORT='GW.50kSNPs.tetrasomic.CDS.natv2filt.genlight.rds'
+PER_SUBSAMP=0.011
 TOT_SNP=5e4
 
 cd $DATA_DIR
@@ -182,6 +186,23 @@ cd $DATA_DIR
 Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
 $DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
 ```
+#### 100k SNPs
+* I needed to temporarily move the 50k file so it didn't get subsamples, too
+```
+module load python/3.7-anaconda-2019.07
+source activate /global/homes/g/grabowsp/.conda/envs/adegenet_2_env
 
+DATA_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/natv2filt_tet_vcfs
+FILE_SUB_SHORT=natv2filt.genlight.rds
+OUT_SHORT='GW.100kSNPs.tetrasomic.CDS.natv2filt.genlight.rds'
+PER_SUBSAMP=0.022
+TOT_SNP=1e5
+
+cd $DATA_DIR
+
+Rscript /global/homes/g/grabowsp/tools/sg_8X/adegenet_analysis/adegenet_genotype_generation/subsample_genlight.r \
+$DATA_DIR '*'$FILE_SUB_SHORT $OUT_SHORT $PER_SUBSAMP $TOT_SNP
+
+```
 
 
