@@ -1,4 +1,4 @@
-# Steps for running ADMIXTURE on natv2 samples
+# Steps for running ADMIXTURE on natv2filt data set
 
 ## Steps
 * generate tped files with VCF tools
@@ -105,22 +105,22 @@ for CHRNAME in 01K 01N 02K 02N 03K 03N 04K 04N 05K 05N;
 
 #### Concatenate .tped files
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
 
-cat *tped > GW_natv2_50k.tped
-cp Chr01K_natv2_50k.tfam GW_natv2_50k.tfam
+cat *tped > GW_natv2filt_100k.tped
+cp Chr01K_natv2filt_100k.tfam GW_natv2filt_100k.tfam
 ```
 ## Generte .bed
 ```
 module load python/3.7-anaconda-2019.10
 source activate plink_1_env
 
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix 
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix 
 
-plink --tfile GW_natv2_50k --maf 0.0001 --make-bed --out GW_50k_natv2
+plink --tfile GW_natv2filt_100k --maf 0.00001 --make-bed --out GW_100k_natv2filt
 ```
 ## Run ADMIXTURE
-* Example submit script
+* Example submit script for K=1, `run_natv2filt_admixture_K1.sh`
 ```
 #!/bin/bash
 #SBATCH -D .
@@ -139,11 +139,11 @@ plink --tfile GW_natv2_50k --maf 0.0001 --make-bed --out GW_50k_natv2
 module load python/3.7-anaconda-2019.10
 source activate /global/homes/g/grabowsp/.conda/envs/admixture_env
 
-OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
+OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
 
 cd $OUT_DIR
 
-IN_FILE=GW_50k_natv2.bed
+IN_FILE=GW_100k_natv2filt.bed
 
 K_NUM=1
 
@@ -154,29 +154,29 @@ admixture --cv=$CV_NUM $IN_FILE $K_NUM | tee log${K_NUM}.out
 ```
 ### Make additional submit files
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
  
 for KN in {2..10};
 do
-sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_natv2_admixture_K1.sh > \
-run_natv2_admixture_K$KN'.sh';
+sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_natv2filt_admixture_K1.sh > \
+run_natv2filt_admixture_K$KN'.sh';
 done
 
 ```
 ### Run jobs
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix 
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix 
 
 for KN in {1..10};
 do
-sbatch run_natv2_admixture_K$KN'.sh';
+sbatch run_natv2filt_admixture_K$KN'.sh';
 done
 ```
 
 ## Analyze CV error
 ### Generate CV error file
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
 
 for K in {1..10};
   do
@@ -193,7 +193,7 @@ for K in {1..10};
 library(data.table)
 library(tidyverse)
 
-data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/'
+data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/'
 
 cv_val_file <- paste(data_dir, 'cv_error_vals.txt', sep = '')
 cv_vals <- fread(cv_val_file, header = F)
@@ -211,12 +211,14 @@ gg_cv <- ggplot(CV_dt, aes(x = K_num, y = CV_vals)) +
   xlab('K') + ylab('CV error') +
   ggtitle('ADMIXTURE CV error for nat_v2 \nsamps and 50k SNPs')
 
-out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/natv2_50k_CV_error.pdf'
+out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/natv2filt_100k_CV_error.pdf'
 
 pdf(out_file, width = 4.5, height = 4.5)
 gg_cv
 dev.off()
 ```
+
+##### CONTINUE FROM HERE ########
 
 ## Generate barplots
 ### K = 2
