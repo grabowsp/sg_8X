@@ -218,46 +218,37 @@ gg_cv
 dev.off()
 ```
 
-##### CONTINUE FROM HERE ########
-
 ## Generate barplots
 ### K = 2
 * R script for K=2
-  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2_admix/natv2_admix_K2_barplot.r`
+  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2filt_admix/natv2filt_admix_K2_barplot.r`
 * Figure
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.2.ADMIXTURE.memb.pdf`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/GW_100k_natv2filt.2.ADMIXTURE.memb.pdf`
 ### K = 3
 * R script for K=3
-  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2_admix/natv2_admix_K3_barplot.r`
+  * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2filt_admix/natv2filt_admix_K3_barplot.r`
 * Figure
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.3.ADMIXTURE.memb.pdf`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/GW_100k_natv2filt.3.ADMIXTURE.memb.pdf`
 
 ## Generate Results File
 * File paths
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.2.results.txt`
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/GW_50k_natv2.3.results.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/GW_100k_natv2filt.2.results.txt`
+    * Group 1 = Midwest
+    * Group 2 = Lowland
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/GW_100k_natv2filt.3.results.txt`
+    * Group 1 = Atlantic
+    * Group 2 = Midwest
+    * Group 3 = Gulf
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/
 
-cut -d " " -f 1 GW_50k_natv2.fam | \
-paste -d " " - GW_50k_natv2.2.Q > \
-GW_50k_natv2.2.results.txt
+cut -d " " -f 1 GW_100k_natv2filt.fam | \
+paste -d " " - GW_100k_natv2filt.2.Q > \
+GW_100k_natv2filt.2.results.txt
 
-cut -d " " -f 1 GW_50k_natv2.fam | \
-paste -d " " - GW_50k_natv2.3.Q > \
-GW_50k_natv2.3.results.txt
-
-```
-
-## Convert TPED to PED to try with PGDSpider to convert to NEXUS
-* note couldn't get PGDSpider to install because of java issues, so didn't move forward
-```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2_admix/
-
-module load python/3.7-anaconda-2019.10
-source activate plink_1_env
-
-plink --tfile GW_natv2_50k --maf 0.0001 --recode --out GW_50k_natv2
+cut -d " " -f 1 GW_100k_natv2filt.fam | \
+paste -d " " - GW_100k_natv2filt.3.Q > \
+GW_100k_natv2filt.3.results.txt
 
 ```
 
