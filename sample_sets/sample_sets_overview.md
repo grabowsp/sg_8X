@@ -38,3 +38,31 @@
 * VCF sample name list
   * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/nat_filt_v2_names.txt`
 
+## `natv2filt` temporary genepool designations
+* used ADMIXTURE and PCA results to id samples for each gene pool
+  * "main" = main cluster
+  * "total" = expaned cluster
+* Midwest main
+  * 206 samples
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_MW_main_names.txt`
+* Midwest total
+  * 228 samples
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_MW_total_names.txt`
+* Gulf main
+  * 77 samples
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_GULF_main_names.txt`
+* Gulf total
+  * 157 samples
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_GULF_total_names.txt`
+* Atlantic main
+  * 257 samples
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_ATL_main_names.txt`
+* Atlantic total
+  * * 284 samples
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_ATL_total_names.txt`
+* "Misfit" samples
+  * 37 samples that don't fit in any of the "total" genepool groups
+  * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_MISFIT_names.txt`
+
+
+
