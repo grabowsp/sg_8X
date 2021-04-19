@@ -103,26 +103,25 @@ for CHRNAME in 01K 01N 02K 02N 03K 03N 04K 04N 05K 05N;
   done
 ```
 
-########## CONTINUE FROM HERE ###############
-
 #### Concatenate .tped files
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix
 
-cat *tped > GW_natv2filt_100k.tped
-cp Chr01K_natv2filt_100k.tfam GW_natv2filt_100k.tfam
+cat *tped > GW_natv2filt_GULF_tot.tped
+cp Chr01K_natv2filt_GULF_tot.tfam GW_natv2filt_GULF_tot.tfam
 ```
 ## Generte .bed
 ```
 module load python/3.7-anaconda-2019.10
 source activate plink_1_env
 
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix 
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix 
 
-plink --tfile GW_natv2filt_100k --maf 0.00001 --make-bed --out GW_100k_natv2filt
+plink --tfile GW_natv2filt_GULF_tot --maf 0.00001 --make-bed --out \
+GW_natv2filt_GULF_tot
 ```
 ## Run ADMIXTURE
-* Example submit script for K=1, `run_natv2filt_admixture_K1.sh`
+* Example submit script for K=1, `run_natv2filt_GULF_tot_admixture_K1.sh`
 ```
 #!/bin/bash
 #SBATCH -D .
@@ -141,11 +140,11 @@ plink --tfile GW_natv2filt_100k --maf 0.00001 --make-bed --out GW_100k_natv2filt
 module load python/3.7-anaconda-2019.10
 source activate /global/homes/g/grabowsp/.conda/envs/admixture_env
 
-OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
+OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix
 
 cd $OUT_DIR
 
-IN_FILE=GW_100k_natv2filt.bed
+IN_FILE=GW_natv2filt_GULF_tot.bed
 
 K_NUM=1
 
@@ -156,29 +155,30 @@ admixture --cv=$CV_NUM $IN_FILE $K_NUM | tee log${K_NUM}.out
 ```
 ### Make additional submit files
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix
  
 for KN in {2..10};
 do
-sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_natv2filt_admixture_K1.sh > \
-run_natv2filt_admixture_K$KN'.sh';
+sed 's/K_NUM=1/'K_NUM="$KN"'/g' run_natv2filt_GULF_tot_admixture_K1.sh > \
+run_natv2filt_GULF_tot_admixture_K$KN'.sh';
 done
 
 ```
 ### Run jobs
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix 
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix 
 
 for KN in {1..10};
 do
-sbatch run_natv2filt_admixture_K$KN'.sh';
+sbatch run_natv2filt_GULF_tot_admixture_K$KN'.sh';
 done
 ```
+########## CONTINUE FROM HERE ###############
 
 ## Analyze CV error
 ### Generate CV error file
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix
 
 for K in {1..10};
   do
@@ -195,7 +195,7 @@ for K in {1..10};
 library(data.table)
 library(tidyverse)
 
-data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/'
+data_dir <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix/'
 
 cv_val_file <- paste(data_dir, 'cv_error_vals.txt', sep = '')
 cv_vals <- fread(cv_val_file, header = F)
@@ -211,16 +211,17 @@ gg_cv <- ggplot(CV_dt, aes(x = K_num, y = CV_vals)) +
   geom_point() +
   scale_x_continuous(breaks = seq(10)) +
   xlab('K') + ylab('CV error') +
-  ggtitle('ADMIXTURE CV error for nat_v2 \nsamps and 50k SNPs')
+  ggtitle('ADMIXTURE CV error for nat_v2 GULF_tot\nsamps and 50k SNPs')
 
-out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/natv2filt_100k_CV_error.pdf'
+out_file <- '/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix/natv2filt_GULF_tot_CV_error.pdf'
 
 pdf(out_file, width = 4.5, height = 4.5)
 gg_cv
 dev.off()
 ```
-
+* k=3 is best, some support for k=4
 ## Generate barplots
+* HAVE NOT MADE BARPLOTS YET
 ### K = 2
 * R script for K=2
   * `/home/grabowsky/tools/workflows/sg_8X/admixture_analysis/natv2filt_admix/natv2filt_admix_K2_barplot.r`
@@ -234,23 +235,18 @@ dev.off()
 
 ## Generate Results File
 * File paths
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/GW_100k_natv2filt.2.results.txt`
-    * Group 1 = Midwest
-    * Group 2 = Lowland
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/GW_100k_natv2filt.3.results.txt`
-    * Group 1 = Atlantic
-    * Group 2 = Midwest
-    * Group 3 = Gulf
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix/GW_natv2filt_GULF_tot.3.results.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix/GW_natv2filt_GULF_tot.4.results.txt`
 ```
-cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_admix/
+cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/admix_analysis/natv2filt_GULF_tot_admix/
 
-cut -d " " -f 1 GW_100k_natv2filt.fam | \
-paste -d " " - GW_100k_natv2filt.2.Q > \
-GW_100k_natv2filt.2.results.txt
+cut -d " " -f 1 GW_natv2filt_GULF_tot.fam | \
+paste -d " " - GW_natv2filt_GULF_tot.3.Q > \
+GW_natv2filt_GULF_tot.3.results.txt
 
-cut -d " " -f 1 GW_100k_natv2filt.fam | \
-paste -d " " - GW_100k_natv2filt.3.Q > \
-GW_100k_natv2filt.3.results.txt
+cut -d " " -f 1 GW_natv2filt_GULF_tot.fam | \
+paste -d " " - GW_natv2filt_GULF_tot.4.Q > \
+GW_natv2filt_GULF_tot.4.results.txt
 
 ```
 
