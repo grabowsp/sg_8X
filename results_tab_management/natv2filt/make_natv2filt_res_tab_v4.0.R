@@ -35,7 +35,7 @@ mf_res_tab <- fread(mf_res_file)
 
 ### SET OUTPUT ###
 
-res_out_file <- '/Users/grabowsk/data/sg_8X_analysis/natv2filt_res_tab_v1.0.txt'
+res_out_file <- '/Users/grabowsk/data/sg_8X_analysis/natv2filt_res_tab_v4.0.txt'
 
 ### FUNCTIONS FOR ANALYSIS ######
 standardize_PC <- function(pc_vals){
