@@ -1,60 +1,34 @@
 # Assign allele states to the alleles in introgression comparisons
 
-# INPUT EXPLANATIONS
-# pop1_hw_file = input [1]; file path for vcfTools hardy-weinberg output for 
-#			training population 1 (pop1)
-# pop2_hw_file = input [2]; file path for vcfTools hardy-weinberg output for 
-#			training population 2 (pop2)
-# pop1_name = input [3]; name/abbreviation for pop1, used for file names
-# pop2_name = input [4]; name/abbreviation for pop2, used for file names
-# out_dir = input [5]; the directory where output files will be saved
-# missing_cut = input [6]; the minimum percentage of samples in both 
-#			training set that SNP but be present in to be retained
-#			ex: 0.8
-# n_training = input [7]; the number of samples in a training set; currently
-#			assumes training sets use same number, but can
-#			update in the future in need be; ex: 40
-# min_keep_freq = input [8]; the minimum allele frequency for an allele to be
-#			retained as informative; ex: 0.5
-# prob_allele_ratio = input [9]; the probability allele ratio of popA/popB
-#			for an allele to be considered informative
-
-# Explanation of outputs
-# allele_freq_file = table with REF allele freq for both pops at each 
-#   retained SNP position
-# keep_position_file = table with CHR and POS for retained SNPs; to be used
-#   for future vcfTools needs
-# allele_state_file = table REF and ALT allele state designation at each
-#   retained SNP
-
 ### LOAD ENVIRONMENT ###
 # bash
 # source activate R_analysis
 
-args <- commandArgs(trailingOnly=T)
+# args <- commandArgs(trailingOnly=T)
 
 ### LOAD PACKAGES ###
 library(data.table)
 
 ### INPUT DATA ###
-pop1_hw_file <- args[1]
-#pop1_hw_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
-#  'introgression_v3/', 'MW_training_MWvGULF.hwe', sep = '')
+#pop1_hw_file <- args[1]
+pop1_hw_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
+  'introgression_v3/', 'MW_training_MWvGULF.hwe', sep = '')
 pop1_hw <- fread(pop1_hw_file)
 
-pop2_hw_file <- args[2]
-#pop2_hw_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
-#  'introgression_v3/', 'GULF_training_MWvGULF.hwe', sep = '')
+#pop2_hw_file <- args[2]
+pop2_hw_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
+  'introgression_v3/', 'GULF_training_MWvGULF.hwe', sep = '')
 pop2_hw <- fread(pop2_hw_file)
 
 ### SET OUTPUT ###
-pop1_name <- args[3]
-#pop1_name <- 'MW'
-pop2_name <- args[4]
-#pop2_name <- 'GULF'
+#pop1_name <- args[3]
+pop1_name <- 'MW'
+#pop2_name <- args[4]
+pop2_name <- 'GULF'
 
-out_dir <- args[5]
-#out_dir <- '/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/'
+#out_dir <- args[5]
+out_dir <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
+  'introgression_v3/MW_analysis/', sep = '')
 tmp_string <- rev(unlist(strsplit(out_dir, split = '')))
 if(tmp_string[1] != '/'){
   out_dir <- paste(out_dir, '/', sep = '')
@@ -70,16 +44,16 @@ allele_state_file <- paste(out_dir, pop1_name, '_v_', pop2_name,
   '_allele_states.txt', sep = '')
 
 ### SET VARIABLES ###
-missing_cut <- as.numeric(args[6])
-#missing_cut <- 0.8
+#missing_cut <- as.numeric(args[6])
+missing_cut <- 0.8
 # minimum % of samples with genotypes; max missing = 1-missing_cut
 
-n_training <- as.numeric(args[7])
-#n_training <- 40
+#n_training <- as.numeric(args[7])
+n_training <- 40
 # the number of samples in the training set
 
-min_keep_freq <- as.numeric(args[8])
-#min_keep_freq <- 0.5
+#min_keep_freq <- as.numeric(args[8])
+min_keep_freq <- 0.5
 # The minimum frequency for an allele to be considered informative in a
 #  population
 
@@ -208,6 +182,11 @@ length(setdiff(seq(length(pop1_alt_freq)), tmp_BOTH))
 
 sum(duplicated(tmp_BOTH))
 # 20273 SNPs informative for both alleles
+
+length(c(pop1_only_REF, pop1_mainly_REF, pop1_only_ALT, pop1_mainly_ALT))
+# 38217 SNPs informative about MW
+length(c(pop2_only_REF, pop2_mainly_REF, pop2_only_ALT, pop2_mainly_ALT))
+# 40885 SNPs informative about GULF
 
 allele_assign_tab <- data.table(CHR = pop1_hw_filt$CHR,
   POS = pop1_hw_filt$POS,

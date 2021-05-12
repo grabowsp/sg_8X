@@ -4,7 +4,7 @@
 # bash
 # source activate R_analysis
 
-# args = commandArgs(trailingOnly=T)
+args = commandArgs(trailingOnly=T)
 
 ### LOAD PACKAGES ###
 library(data.table)
@@ -19,9 +19,9 @@ introg_indiv_func_file <- paste(func_dir, 'comp_introg_indiv_functions.r',
 source(introg_indiv_func_file)
 
 ### INPUT DATA ###
-# vcf_file <- args[1]
-vcf_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
-  'introgression_v3/', 'grp2_MWvGULF.vcf', sep = '')
+vcf_file <- args[1]
+#vcf_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
+#  'introgression_v3/', 'grp2_MWvGULF.vcf', sep = '')
 vcf_in <- read.table(vcf_file, header = F, stringsAsFactors = F)
 
 vcf_head_tmp <- system(paste('grep CHR ', vcf_file, sep = ''), intern = T)
@@ -31,45 +31,51 @@ vcf_head_3 <- unlist(strsplit(vcf_head_2, split = '\t'))
 colnames(vcf_in) <- vcf_head_3
 vcf_in <- data.table(vcf_in)
 
-# allele_state_file <- args[2]
-allele_state_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
-  'introgression_v3/', 'MW_v_GULF_allele_states.txt', sep = '')
+allele_state_file <- args[2]
+#allele_state_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/', 
+#  'introgression_v3/', 'MW_v_GULF_allele_states.txt', sep = '')
 allele_states <- fread(allele_state_file)
 
 ### SET VARIABLES ###
-# testgrp_name <- args[3]
-testgrp_name <- 'grp2'
+testgrp_name <- args[3]
+#testgrp_name <- 'grp2'
 
-# pop1_name <- args[4]
+pop1_name <- args[4]
 # pop1 = main background group
-pop1_name <- 'MW'
+#pop1_name <- 'MW'
 
-# pop2_name <- args[5]
+pop2_name <- args[5]
 # pop2 = cadidate introgression group
-pop2_name <- 'GULF'
+#pop2_name <- 'GULF'
 
-# test_window_size <- args[6]
+test_window_size <- as.numeric(args[6])
 # test_window_size = the number of SNPs in each window
-test_window_size <- 10
+#test_window_size <- 10
 
 ### SET OUPUTS ###
 
-out_dir <- '/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/'
+out_dir <- args[7]
+#out_dir <- '/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/'
 if(rev(unlist(strsplit(out_dir, split = '')))[1] != '/'){
   out_dir <- paste(out_dir, '/', sep = '')
 }
 
 # results from window-based analysis
-window_result_file_out <-  paste('/home/f2p1/work/grabowsk/data/switchgrass/',
-  'introgression_v3/', 'grp2_MW_v_GULF_10SNP_window_results.rds', sep = '')
+window_result_file_out <- paste(out_dir, testgrp_name, '_', pop2_name,
+  '_into_', pop1_name, '_', test_window_size, 'SNP_window', '_results.rds',
+  sep = '')
+
+#window_result_file_out <-  paste('/home/f2p1/work/grabowsk/data/switchgrass/',
+#  'introgression_v3/', 'grp2_MW_v_GULF_10SNP_window_results.rds', sep = '')
 
 # table and RDS file for genotypes to be used for environmental association
 #   and Redundancy
-rda_geno_file_out <- paste('/home/f2p1/work/grabowsk/data/switchgrass/',
-  'introgression_v3/', 'grp2_MW_v_GULF_NGULFalleles_genotypes.txt', sep = '')
-rda_geno_file_rds <- paste('/home/f2p1/work/grabowsk/data/switchgrass/',
-  'introgression_v3/', 'grp2_MW_v_GULF_NGULFalleles_genotypes.rds', sep = '')
+rda_geno_file_out <- paste(out_dir, testgrp_name, '_', pop2_name,
+  '_into_', pop1_name, '.NPOP2alleles.txt', sep = '')
+rda_geno_file_rds <- paste(out_dir, testgrp_name, '_', pop2_name,
+  '_into_', pop1_name, '.NPOP2alleles.rds', sep = '')
 
+# plot files
 tot_adj_n_pop2_plot_file <- paste(out_dir, testgrp_name, '_', pop2_name, 
   '_into_', pop1_name, '_', test_window_size, 'SNP_window', '.adj_n_pop2.pdf',
   sep = '')
@@ -78,12 +84,9 @@ tot_score_plot_file <- paste(out_dir, testgrp_name, '_', pop2_name,
   '_into_', pop1_name, '_', test_window_size, 'SNP_window', '.pop2_score.pdf',
   sep = '')
 
-
-
 ###
-# Genotype Categories and Color options
-## These colors were chosen based on pop1 = MW and pop2 = GULF and should
-##   be adjusted accordingly
+# Genotype Categories
+
 # cat_a = 1:1 = 3:3 = dark blue (HOM pop1_ONLY)
 # cat_b = 2:2 = 4:4 = medium blue (HOM pop1_MAINLY)
 # cat_c = 1:Z = 3:Y = dark blue, less saturation (HET pop1_ONLY:NO_INFO)
@@ -102,25 +105,7 @@ tot_score_plot_file <- paste(out_dir, testgrp_name, '_', pop2_name,
 # cat_m = Z:Z = Y:Y = grey (HOM NO_INFO)
 # cat_n = missing data
 
-# Set color variables
-intro_col_vec <- c()
-intro_col_vec$cat_a <- 'blue4'
-intro_col_vec$cat_b <- 'blue2'
-intro_col_vec$cat_c <- 'steelblue3'
-intro_col_vec$cat_d <- 'steelblue1'
-intro_col_vec$cat_e <- 'red3'
-intro_col_vec$cat_f <- 'red1'
-intro_col_vec$cat_g <- 'indianred3'
-intro_col_vec$cat_h <- 'indianred1'
-intro_col_vec$cat_i <- 'mediumorchid3'
-intro_col_vec$cat_j <- 'purple3'
-intro_col_vec$cat_k <- 'magenta3'
-intro_col_vec$cat_l <- 'mediumorchid1'
-intro_col_vec$cat_m <- 'gray75'
-intro_col_vec$cat_n <- 'white'
-#######
-
-### Introgression weights
+### Introgression weights for calculating "score"
 pop1_only_weight <- -1
 pop1_mainly_weight <- -0.5
 pop2_only_weight <- 1
@@ -201,7 +186,7 @@ for(sv in samp_vec){
   #
   # genotype categories
   geno_cat_vec <- gen_cat_state_vec(geno_state_vec = tmp_state_vec,
-    pop1_name = 'MW', pop2_name = 'GULF')
+    pop1_name = pop1_name, pop2_name = pop2_name)
   tot_pop2_list[[sv]][['geno_cat_vec']] <- geno_cat_vec
   #
   # calculate genotype scores
@@ -267,16 +252,7 @@ rda_tab_2 <- cbind(cbind(tmp_sub_vcf, tmp_sub_allele_states), rda_mat)
 fwrite(rda_tab_2, file = rda_geno_file_out, sep = '\t')
 saveRDS(rda_tab_2, file = rda_geno_file_rds)
 
-# source(chrom_paint_func_file)
-
-### CONTINUE FROM HERE ###
-
-# 3) wrap to do this across many samples
-
-# plotting stuff:
-# use alternating blue/gray for POP2_SCORE
-# use alternating black/gray for ADJ_N_POP2
-# Set max POP2_SCORE and ADJ_N_POP2 for plotting
+### Plot results
 
 # set palettes for plotting
 black_chrom_palette <- rep(c('black', 'gray30'), times = 9)

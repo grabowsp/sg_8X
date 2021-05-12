@@ -144,14 +144,42 @@ vcftools --gzvcf $VCF_SHORT -c  --keep $SAMP_SHORT \
 ### Try painting grp 2
 * `/home/grabowsky/tools/workflows/sg_8X/introgression/mw_v_gulf_grp2_painting.r`
 
-### Calculate allele frequency in grp2
+## Calculate allele frequency in MW_03 (most of old grp2)
 * Steps
   * Get small-scale population splits
   * Find grp2 samples that are part of same small-group
-    * old grp2 = MW_01 (35 samples)
+    * old grp2 = MW_03 (52 samples), MW_02 (1 weird 8X), MW_04 (7), and MW_05 (6)
   * Generate HW file for grp2 subset
   * Compare grp2 freq to training freqs
-* R scratch for checking grp2
+
+### Generate HW file for MW_03 for MW vs GULF
+```
+### MW vs GULF
+```
+bash
+source activate bioinformatics_env
+
+OUTDIR=/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/
+VCF_SHORT=GulfVsMWhiFst.v3.disomic.CDS.vcf.gz
+VCF_IN=$OUTDIR$VCF_SHORT
+
+POS_SHORT=MW_v_GULF_keep_pos.txt
+POS_FILE=$OUTDIR$POS_SHORT
+
+GROUP_DIR=/home/grabowsky/tools/workflows/sg_8X/sample_sets/samp_set_files/natv2filt_subgrps/
+
+cd $OUTDIR
+
+GROUP_SHORT=MW_03_names.txt
+GROUP_IN=$GROUP_DIR$GROUP_SHORT
+OUT_PRE=MW_03_MWvGULF
+vcftools --gzvcf $VCF_IN --out $OUT_PRE --keep $GROUP_IN \
+--positions $POS_FILE--freq
+vcftools --gzvcf $VCF_IN --out $OUT_PRE --keep $GROUP_IN \
+--positions $POS_FILE --hardy
+
+```
+#### Look at MW_03 allele frequencies
 ```
 # bash
 # source activate R_analysis
@@ -159,26 +187,137 @@ vcftools --gzvcf $VCF_SHORT -c  --keep $SAMP_SHORT \
 ### LOAD PACKAGES ###
 library(data.table)
 
-res_tab_file <- '/home/f2p1/work/grabowsk/data/switchgrass/sg_8X_result_tabs/natv2filt_res_tab_v4.0.txt'
-res_tab <- fread(res_tab_file)
+### INPUT DATA ###
+data_dir <- '/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/'
 
-res_tab[grep('MW_', res_tab$sub_grp), .N, by = sub_grp]
+subgrp_hw_file <- paste(data_dir, 'MW_03_MWvGULF.hwe', sep = '')
+subgrp_hw <- fread(subgrp_hw_file)
 
+train_freq_file <- paste(data_dir, 'MW_v_GULF_ref_freq.txt', sep = '')
+train_freq <- fread(train_freq_file)
 
-vcf_file <- paste('/home/f2p1/work/grabowsk/data/switchgrass/',
-  'introgression_v3/', 'grp2_MWvGULF.vcf', sep = '')
-vcf_in <- read.table(vcf_file, header = F, stringsAsFactors = F)
-
-vcf_head_tmp <- system(paste('grep CHR ', vcf_file, sep = ''), intern = T)
-vcf_head_2 <- sub('#CHROM', 'CHROM', vcf_head_tmp)
-vcf_head_3 <- unlist(strsplit(vcf_head_2, split = '\t'))
-
-colnames(vcf_in) <- vcf_head_3
-vcf_in <- data.table(vcf_in)
+allele_state_file <- paste(data_dir, 'MW_v_GULF_allele_states.txt', sep = '')
+allele_states <- fread(allele_state_file)
 
 
 
+##########
+
+subgrp_geno_count <- lapply(strsplit(
+  unlist(subgrp_hw[, c('OBS(HOM1/HET/HOM2)')]),
+  split = '/', fixed = T), function(x) as.numeric(x))
+
+subgrp_n_genos <- unlist(lapply(subgrp_geno_count, function(x) sum(x)))
+subgrp_low_inds <- which(subgrp_n_genos < (max(subgrp_n_genos)*0.8))
+# [1] 667
+
+subgrp_ref_freq <- unlist(lapply(subgrp_geno_count, function(x)
+  (x[1] * 2 + x[2])/(sum(x)*2)))
+subgrp_alt_freq <- unlist(lapply(subgrp_geno_count, function(x)
+  (x[3] * 2 + x[2])/(sum(x)*2)))
+
+###
+
+# calculate the REF freq difference between pop2 and pop1 and convert to 
+#  their range
+ref_freq_dif <- unlist(train_freq[,4] - train_freq[,3])
+ref_freq_range <- abs(ref_freq_dif)
+
+# find SNPs where pop1 has higher REF freq
+pop1_ref_hi <- which(ref_freq_dif < 0)
+
+# calc diff in REF freq between subgrp and pop1
+sub_v_pop1_ref <- subgrp_ref_freq - unlist(train_freq[,3])
+
+# adjust diff for SNPs where pop1 has higher REF freq than pop2 because
+#  want this to represent difference in direction of pop2
+sub_v_pop1_ref_2 <- sub_v_pop1_ref
+sub_v_pop1_ref_2[pop1_ref_hi] <- sub_v_pop1_ref[pop1_ref_hi]*-1
+
+F_sub_v_pop1 <- sub_v_pop1_ref_2 / ref_freq_range
+F_sub_v_pop1[subgrp_low_inds] <- NA
+
+# CONTINUE FROM HERE WITH WINDOW ANALYSIS
+### decide on window cutoff of F_sub_v_pop1
+
+```
+
+## Notes from R when trying to actually paint chromosomes
+```
+# My feeling about individual colors - it's going to be too hard to make
+#  a meaningful plot where colors show good resolution. I think, for now,
+#  the line plots will show the best pattern. Perhaps we can show color
+#  patterns for close-ups of certain regions...
+
+MW_G_palette <- colorRampPalette(brewer.pal(9, 'Oranges'))
+mwg_cont <- scale_colour_gradientn(colours = MW_G_palette(100),
+  limits = c(0.5,20))
+
+score_color_names <- as.character(seq(from=0, to = 20, by = 0.5))
+gray_palette <- rev(gray.colors(n = length(score_color_names), start = 0.2,
+  end = 1.0))
+names(gray_palette) <- score_color_names
+
+mwg_cont <- scale_colour_gradientn(colours = MW_G_palette(100),
+  limits = c(0,20))
+
+scale_color_grey(start = 0.2, end = 1.0, limits = c(0,20))
+
+tmp_tab <- tot_pop2_list[[1]][[4]]
+tmp_tab[, PLOT_COL := as.character(NA)]
+for(i in unique(tmp_tab$POP2_SCORE)){
+  tmp_inds <- which(tmp_tab$POP2_SCORE == i)
+  tmp_tab[tmp_inds, PLOT_COL := gray_palette[as.character(i)]]
+}
+gg_col_test_2 <- ggplot(tmp_tab) +
+  theme_void() +
+#  geom_point() + 
+  xlim(-10000, (max(tmp_tab$POS_CUM)+10000)) +
+  ylim(0, 1) +
+  geom_vline(xintercept = tmp_tab$POS_CUM, color = tmp_tab$PLOT_COL)
+#  mwg_cont
+#  scale_color_grey(start = 0.2, end = 1.0, limits = c(0,20))
+#  scale_colour_gradient(low = 'grey20', high = 'black', limits = c(0,20))
+
+test_color_plot_2 <- '/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/J567.A_Chr01K_introgression_color_2.pdf'
+
+pdf(test_color_plot_2, width = 18, height = 4)
+gg_col_test_2
+dev.off()
+
+tmp_geno_cat_vec <- tot_pop2_list[[1]][['geno_cat_vec']]
+
+geno_color_vec <- rep(NA, times = length(tmp_geno_cat_vec))
+for(cn in unique(tmp_geno_cat_vec)){
+  geno_color_vec[which(tmp_geno_cat_vec == cn)] <- intro_col_vec[[cn]]
+}
+
+tmp_tab <- data.table(CHROM = vcf_in$CHROM, POS_CUM = vcf_in$POS_CUM,
+  PLOT_COLOR = geno_color_vec)
+
+test_color_plot_1 <- '/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/J567.A_Chr01K_introgression_color_1.pdf'
+
+```
+### Notes about colors
+```
+# Set color variables
+intro_col_vec <- c()
+intro_col_vec$cat_a <- 'blue4'
+intro_col_vec$cat_b <- 'blue2'
+intro_col_vec$cat_c <- 'steelblue3'
+intro_col_vec$cat_d <- 'steelblue1'
+intro_col_vec$cat_e <- 'red3'
+intro_col_vec$cat_f <- 'red1'
+intro_col_vec$cat_g <- 'indianred3'
+intro_col_vec$cat_h <- 'indianred1'
+intro_col_vec$cat_i <- 'mediumorchid3'
+intro_col_vec$cat_j <- 'purple3'
+intro_col_vec$cat_k <- 'magenta3'
+intro_col_vec$cat_l <- 'mediumorchid1'
+intro_col_vec$cat_m <- 'gray75'
+intro_col_vec$cat_n <- 'white'
 
 
+```
 
 
