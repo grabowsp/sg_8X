@@ -10,6 +10,13 @@
   * on HA: `/home/f2p1/work/grabowsk/data/switchgrass/sg_8X_result_tabs/natv2filt_res_tab_v4.0.txt`
   * Includes PCA and ADMIXTURE results from genepool analysis and "misfits"
     * Just includes PCA and ADMIX results used for sub-group splits
+* v4.1
+  * not at NERSC yet
+  * at HAIB: `/home/f2p1/work/grabowsk/data/switchgrass/sg_8X_result_tabs/natv2filt_res_tab_v4.1.txt`
+  * new columns:
+    * `subgrp_v2` adding `MW_01_hi` group
+    * `MW_grp_1` grouping MW samples by ploidy and introgression levels: MW_4X,
+MW_4X_intro, MW_8X, MW_8X_hi
 
 ## Temporary Genepool tables
 * V1.0

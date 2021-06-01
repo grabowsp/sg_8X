@@ -1,4 +1,4 @@
-# Steps for examining introgression in MW 8X samples
+# Steps for examining introgression in MW 8X and all MW samples
 
 ## Overview
 * Select hi-Fst SNPs for MW_v_GULF and MW_v_ATL
@@ -350,9 +350,38 @@ vcftools --gzvcf $VCF_IN -c  --keep $SAMP_FILE \
   * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_GULF_into_MW.RDA_genos.rds`
   * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_ATL_into_MW.RDA_genos.rds`
 
+## Plots of individual results ordered by subgroups
+* R script
+  * `~/sg_8X/introgression/MWall_gen_subgrp_indiv_plots.r`
+* Outputs
+  * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_GULF_into_MW_10SNP_window_ADJ_N_POP2_subgrp_colors.pdf`
+  * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_GULF_into_MW_10SNP_window_POP2_SCORE_subgrp_colors.pdf`
+  * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_ATL_into_MW_10SNP_window_ADJ_N_POP2_subgrp_colors.pdf`
+  * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_ATL_into_MW_10SNP_window_POP2_SCORE_subgrp_colors.pdf`
 
-### NEXT
-* Plots ordered by subgroups
-
+## Compare Gulf and Atlantic levels in different MW groups
+* R script
+  * `~/sg_8X/introgression/MW_GvA_amount.r`
+* Output plots
+  * Correlation plot of MWvGulf_rda vs MWvGulf_score
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_MWvGulf_rda_score_cor.pdf`
+  * Correlation plot of MWvGulf_rda vs MWvATL_rda
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_GulfvATL_rda.pdf`
+  * Boxplots of Avg Gulf Introgressions by MW groups
+    * all MW subgroups
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_Gulf_rda_box.pdf`
+    * 3 groups: 4X, 8X, 8X_hi
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_Gulf_rda_box_v2.pdf`
+    * 4 groups: 4X, 4X_intro, 8X, 8X_hi
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_Gulf_rda_box_v3.pdf`
+  * Boxplots of Avg Atlantic Introgressions by MW groups
+    * all MW subgroups
+    `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_ATL_rda_box.pdf`
+    * 3 groups: 4X, 8X, 8X_hi
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_ATL_rda_box_v2.pdf`
+    * 4 groups: 4X, 4X_intro, 8X, 8X_hi
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_ATL_rda_box_v3.pdf`
+  * Boxplot of relative amount of Gulf vs Atlantic introgressions in MW subgroups
+    * `/home/f2p1/work/grabowsk/data/switchgrass/introgression_v3/MW_analysis/MWall_rda_diff_boxplot.pdf`
 
 
