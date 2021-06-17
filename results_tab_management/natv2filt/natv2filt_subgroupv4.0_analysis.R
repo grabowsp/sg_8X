@@ -342,7 +342,7 @@ for(pop_name in mw_groups){
 # MW_07 = MW-4X close to MW-8X West
 ## pure Full_K3_MW except occasional traces of Full_K3_GULF
 ## 0.52 to 0.69 MW pop_1; 0.31 to 0.48 MWpop_2
-## MO (5) AK (4)
+## MO (5) AR (4)
 
 # MW_08 = MW-4X distant to MW-8X West
 ## pure Full_K3_MW
