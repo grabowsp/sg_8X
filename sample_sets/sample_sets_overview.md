@@ -64,5 +64,9 @@
   * 37 samples that don't fit in any of the "total" genepool groups
   * `/global/homes/g/grabowsp/data/switchgrass/metadata_8X/natv2filt_tmp_MISFIT_names.txt`
 
-
+* `natv2filt` subgroup names
+  * Genepools and Admixed samples divided into sub groups
+    * Groups decided using PCA and ADMIXTURE results
+    * 10+ groups in each genepool, 8 Admixed groups
+  * git directory: `~sg_8X/sample_sets/samp_set_files/natv2filt_subgrps/`
 

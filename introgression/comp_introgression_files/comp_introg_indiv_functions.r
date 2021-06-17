@@ -1,4 +1,5 @@
-# Functions for introgression "chromosome painting"
+# Functions for introgression analysis of individuals based on training
+#  populations comparisons
 
 gen_geno_state_vec <- function(vcf, samp_name, allele_states){
   ############
@@ -107,12 +108,12 @@ gen_pop2_presence_nonoverlap_window_tab <- function(samp_state_vec, vcf,
   #    to windows with more pop2_only alleles)
   ################
   chr_inds <- grep(chrom, vcf$CHROM)
-  window_start_inds <- chr_inds[seq(1, length(chr_inds), by = 10)]
+  window_start_inds <- chr_inds[seq(1, length(chr_inds), by = window_size)]
   window_start_inds <- window_start_inds[-length(window_start_inds)]
   window_nonoverlap_any_pop2_vec <- c()
   window_nonoverlap_pop2_only_vec <- c()
   for(i in window_start_inds){
-    test_inds <- c(i:(i+9))
+    test_inds <- c(i:(i+(window_size - 1)))
     any_pop2_count <- length(grep(pop2_name, samp_state_vec[test_inds]))
     window_nonoverlap_any_pop2_vec <- c(window_nonoverlap_any_pop2_vec,
       any_pop2_count)
@@ -155,11 +156,11 @@ gen_pop2_presence_overlap_window_tab <- function(samp_state_vec, vcf,
   #    to windows with more pop2_only alleles)
   ################
   chr_inds <- grep(chrom, vcf$CHROM)
-  window_inds <- chr_inds[1:(length(chr_inds)-9)]
+  window_inds <- chr_inds[1:(length(chr_inds)-(window_size - 1))]
   window_overlap_any_pop2_vec <- c()
   window_overlap_pop2_only_vec <- c()
   for(i in window_inds){
-    test_inds <- c(i:(i+9))
+    test_inds <- c(i:(i+(window_size - 1)))
     any_pop2_count <- length(grep(pop2_name, samp_state_vec[test_inds]))
     window_overlap_any_pop2_vec <- c(window_overlap_any_pop2_vec,
       any_pop2_count)
@@ -199,11 +200,11 @@ gen_pop2_score_nonoverlap_window_tab <- function(samp_score_vec, vcf,
   #  and "pop2 score" for each window
   ################
   chr_inds <- grep(chrom, vcf$CHROM)
-  window_start_inds <- chr_inds[seq(1, length(chr_inds), by = 10)]
+  window_start_inds <- chr_inds[seq(1, length(chr_inds), by = window_size)]
   window_start_inds <- window_start_inds[-length(window_start_inds)]
   window_score_vec <- c()
   for(i in window_start_inds){
-    test_inds <- c(i:(i+9))
+    test_inds <- c(i:(i+(window_size - 1)))
     score_count <- sum(samp_score_vec[test_inds])
     window_score_vec <- c(window_score_vec, score_count)
   }
@@ -231,10 +232,10 @@ gen_pop2_score_overlap_window_tab <- function(samp_score_vec, vcf,
   #  and "pop2 score" for each window
   ################
   chr_inds <- grep(chrom, vcf$CHROM)
-  window_inds <- chr_inds[1:(length(chr_inds)-9)]
+  window_inds <- chr_inds[1:(length(chr_inds)-(window_size - 1))]
   window_score_vec <- c()
   for(i in window_inds){
-    test_inds <- c(i:(i+9))
+    test_inds <- c(i:(i+(window_size - 1)))
     score_count <- sum(samp_score_vec[test_inds])
     window_score_vec <- c(window_score_vec, score_count)
   }

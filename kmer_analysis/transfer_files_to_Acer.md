@@ -29,6 +29,18 @@ rm libs*
 scp /global/cscratch1/sd/sujan/Pvirgatum_Acer_paul/* .
 ```
 
+## Second set of files
+### Location of files
+* globus directory
+  * `/global/cfs/cdirs/m342/gsharing/sg_acer`
+  * Sujan's file with prepped fastq files
+    * `/global/cscratch1/sd/sujan/Pvirgatum_Acer_paul/`
+### Transfer files to glubus directory
+```
+cd /global/cfs/cdirs/m342/gsharing/sg_acer
 
+scp /global/cscratch1/sd/sujan/Pvirgatum_Acer_paul/*fastq.bz2 .
+# waiting to do this until permissions are adjusted on the files
+```
 
 
