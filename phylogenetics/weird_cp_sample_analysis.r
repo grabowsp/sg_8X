@@ -99,7 +99,6 @@ as.data.table(sort(weird_samps))
 weird_gulf_inds <- intersect(res_weird_inds, grep('GULF_', res_tab$subgrp_v2))
 weird_gulf_ord <- order(res_tab[weird_gulf_inds, samp_name])
 res_tab[weird_gulf_inds[weird_gulf_ord], list(samp_name, ploidy)]
-as.data.table(sort(res_tab[weird_gulf_inds, samp_name])
 
 tot_8X_gulf_inds <- intersect(grep('GULF_', res_tab$subgrp_v2), 
   which(res_tab$ploidy == '8X'))
@@ -131,28 +130,29 @@ setdiff(tot_8X_gulf_inds, weird_gulf_inds)
 18:    J303.A     4X - Gulf, TX: GULF_06
 19:    J304_A     8X - GULF(99%)/MW admix; TX; GULF_06
 20:    J305.A     4X - Gulf, TX: GULF_06
-21:    J306.A     4X
-22:    J306.B     4X
-23:    J306.C     4X
-24:    J312.A     4X
-25:    J313.A     4X
-26:    J328_A     8X
-27:    J337.A     4X
-28:    J461.A     4X
-29:    J461.B     4X
-30:    J461.C     4X
-31:    J462_B     8X
-32:    J462_C     8X
-33:    J465.A     4X
-34:    J465.B     4X
-35:    J465.C     4X
-36:    J466_D     4X
-37:    J466.A     4X
-38:    J466.B     4X
-39:    J466.C     4X
-40:    J477.A     4X
-41:    J477.C     4X
-42:    J482.A     4X
+21:    J306.A     4X - GULF(99%)/MW admix; TX; GULF_14; part of a cluster
+# with samples with some MW ancestry
+22:    J306.B     4X - GULF(98%)/MW admix; TX; GULF_14;
+23:    J306.C     4X - GULF(99%)/MW admix; TX; GULF_14
+24:    J312.A     4X - Gulf; TX; GULF_07; in same cluster usual group as GULF_06
+25:    J313.A     4X - Gulf; TX; GULF_07
+26:    J328_A     8X - GULF(90%)/MW; TX; GULF_13
+27:    J337.A     4X - GULF; TX; GULF_13
+28:    J461.A     4X - GULF(94%)/ATL admix; MS; GULF_03
+29:    J461.B     4X - GULF(95%)/ATL admix; MS; GULF_03
+30:    J461.C     4X - GULF(97%)/ATL admix; MS; GULF_03
+31:    J462_B     8X - GULF(76%)/MW admix; LA; GULF_05
+32:    J462_C     8X - GULF(79%)/MW admix; LA; GULF_05
+33:    J465.A     4X - GULF(90%)/MW admix; LA; GULF_04
+34:    J465.B     4X - GULF(89%)/MW admix; LA; GULF_04
+35:    J465.C     4X - GULF(90%)/MW admix; LA; GULF_04
+36:    J466_D     4X - GULF(98%)/MW admix; LA; GULF_03
+37:    J466.A     4X - GULF(98%)/MW admix; LA; GULF_03
+38:    J466.B     4X - GULF(99%)/MW admix; LA; GULF_03
+39:    J466.C     4X - GULF(97%)/MW admix; LA; GULF_03
+40:    J477.A     4X - GULF(81%)/MW admix; AR; GULF_04
+41:    J477.C     4X - GULF(80%)/MW admix; AR; GULF_04
+42:    J482.A     4X - 
 43:    J482.B     4X
 44:    J483.C     4X
 45:    J495_C     8X
@@ -171,6 +171,76 @@ setdiff(tot_8X_gulf_inds, weird_gulf_inds)
 58:    J514.A     4X
 59:    J535.A     4X
 
+##########
+# ATL
 
+weird_atl_inds <- intersect(res_weird_inds, grep('ATL_', res_tab$subgrp_v2))
+weird_atl_ord <- order(res_tab[weird_atl_inds, samp_name])
+res_tab[weird_atl_inds[weird_atl_ord], list(samp_name, ploidy)]
 
+tot_8X_atl_inds <- intersect(grep('ATL_', res_tab$subgrp_v2),
+  which(res_tab$ploidy == '8X'))
+
+setdiff(tot_8X_atl_inds, weird_atl_inds)
+# 9/11; only 2 are part of weird upland cp haplotype
+
+ 1:    J019.A     4X - Atlantic, FL; ATL_02
+ 2:   J019.L1     4X - Atlantic, FL; ATL_02
+ 3:   J019.L2     4X - Atlantic, FL; ATL_02
+ 4:   J019.L3     4X - Atlantic, FL; ATL_02
+ 5:    J165_A     8X - ATL(80%)/GULF admix; FL; ATL_11
+ 6:   J179.L1     8X - ATL(70%)/GULF admix; FL; ATL_11
+ 7:    J589_A     4X - ATL(98%)/GULF admix; VA; ATL_10; same cluster as P. amarum
+ 8:    J589.B     4X - ATL(98%)/GULF admix; VA; ATL_10
+ 9:    J589.C     4X - ATL(98%)/GULF admix; VA; ATL_10
+10:    J591.A     4X - ATL(98%)/GULF admix; VA; ATL_07; sampe cluster as P. amarum
+11:    J591.B     4X - ATL(98%)/GULF admix; VA; ATL_07
+12:    J593.B     4X - ATL; NC; ATL_05
+13:    J595.B     4X - ATL; NC; ATL_05
+14:    J595.C     4X - ATL; NC; ATL_05
+15:    J598.B     4X - ATL; MD; ATL_08
+16:    J613.A     4X - ATL(71%)/GULF admix; NC; ATL_07; in cluster with P. amarum
+17:    J613.C     4X - ATL(68%)/GULF admix; NC; ATL_07
+18:    J621.B     4X - ATL; MD; ATL_08
+19:    J621.C     4X - ATL(94%)/GULF admix; MD; ATL_07; in cluster with P. amarum
+20:    J676.A     4X - ATL; VA; ATL_08
+21:    J676.C     4X - ATL; VA; ATL_08
+22:    J677.B     4X - ATL; NC; ATL_05
+23:    J682.B     4X - ATL; NJ; ATL_10
+
+######
+# Misfits (MF_)
+weird_mf_inds <- intersect(res_weird_inds, grep('MF_', res_tab$subgrp_v2))
+weird_mf_ord <- order(res_tab[weird_mf_inds, samp_name])
+res_tab[weird_mf_inds[weird_mf_ord], list(samp_name, ploidy, subgrp_v2)]
+
+tot_8X_mf_inds <- intersect(grep('MF_', res_tab$subgrp_v2),
+  which(res_tab$ploidy == '8X'))
+
+setdiff(tot_8X_mf_inds, weird_mf_inds)
+# 13 of 26 misfits in the weird cp cluster
+
+ 1:    J002_A     6X     MF_08 - FL
+ 2:    J083_A     8X     MF_07 - GA
+ 3:    J187_A     8X     MF_06 - FL
+ 4:    J195_A     8X     MF_03 - NC
+ 5:    J201_A     8X     MF_07 - GA
+ 6:    J342_C     8X     MF_07 - TN
+ 7:    J468_C     8X     MF_08 - MS
+ 8:    J505_A     8X     MF_08 - MS
+ 9:    J505_C     8X     MF_08 - MS
+10:    J506_B     8X     MF_08 - MS
+11:    J579.A     8X     MF_05 - GA
+12:    J579.B     8X     MF_05 - GA
+13:    J579.C     8X     MF_05 - GA
+14:    J581.A     8X     MF_07 - IL # this shouldn't necessarily be a misfit,
+# but was outside the bounds of choosing MW samples in the PCA
+
+#######
+# Midwest
+weird_mw_inds <- intersect(res_weird_inds, grep('MW_', res_tab$subgrp_v2))
+# 200 of these...
+
+# next is to make full NJ tree but colored by weird cp haplotype membership
+# also need to look at samples that didn't assemble...
 
