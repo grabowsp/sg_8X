@@ -290,12 +290,33 @@ pdf(EvW_box_2_out, height = 5, width = 4)
 gg_EvW_box_2
 dev.off()
 
+### Save additional samp sets
 
+all_atl_names_out <- paste(out_dir, 'ATL_all_names.txt', sep = '')
+fwrite(samp_info[grep('ATL', samp_info$subgrp_v2), list(samp_name)], 
+  all_atl_names_out, col.names = F)
 
+all_gulf_names_out <- paste(out_dir, 'GULF_all_names.txt', sep = '')
+fwrite(samp_info[grep('GULF', samp_info$subgrp_v2), list(samp_name)], 
+  all_gulf_names_out, col.names = F)
 
+mw_introgress_names_out <- paste(out_dir, 'MW_introgressed_names.txt', 
+  sep = '')
+fwrite(mean_val_tab[grep('Moderate|High', mean_val_tab$Lowland_class), 
+  list(samp_name)], mw_introgress_names_out, col.names = F)
 
+mw8X_introgress_names_out <- paste(out_dir, 'MW8X_introgressed_names.txt', 
+  sep = '')
+fwrite(mean_val_tab[intersect(
+  grep('Moderate|High', mean_val_tab$Lowland_class), 
+  which(mean_val_tab$ploidy == '8X')), list(samp_name)], 
+  mw8X_introgress_names_out, col.names = F)
 
+mw_nointrogress_names_out <- paste(out_dir, 'MW_no_introgress_names.txt', 
+  sep = '')
+fwrite(mean_val_tab[Lowland_class == 'Low', list(samp_name)], 
+  mw_nointrogress_names_out, col.names = F)
 
-
-
-
+all_mw_names_out <- paste(out_dir, 'MW_all_names.txt', sep = '')
+fwrite(samp_info[grep('MW', samp_info$subgrp_v2), list(samp_name)],
+  all_mw_names_out, col.names = F)

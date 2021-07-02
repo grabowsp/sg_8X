@@ -128,5 +128,55 @@ png(atl_Chr08N_noRDA_man_out, width = 480/2, height = 480)
 atl_gg_Chr08N_noRDA_fval
 dev.off()
 
+### Atlantic Chr03K manhattan, no RDA results - as contrast to Chr08N
+
+atl_gg_Chr03K_noRDA_fval <- ggplot(atl_fvals[CHR == 'Chr03K'],
+  aes(x = POS_CUM, y = EXP_FVAL)) +
+  geom_point(aes(color = CHR), show.legend = F) +
+  plot_class_pal +
+  ggtitle('MW8X_all exp(Fvals) for Atlantic\ninto Midwest SNPs\nChr03K') +
+  ylab('EXP(F_VAL)') +
+#  scale_x_continuous(labels = '') +
+  geom_hline(yintercept = exp(atl_outlier_cut), color = 'red',
+    linetype = 'dotted')
+
+atl_Chr03K_noRDA_man_out <- paste(out_dir,
+  'ATL_into_MW_manhattan_noRDA_Chr03K.png', sep = '')
+
+png(atl_Chr03K_noRDA_man_out, width = 480/2, height = 480)
+atl_gg_Chr03K_noRDA_fval
+dev.off()
+
+
+#### Test for significance for enrichment of RDA outliers in top Fval SNPs
+
+outlier_tab <- data.frame(rda_sig = c(105, 6135), not_sig = c(492, 52567))
+rownames(outlier_tab) <- c('Low_shift', 'All_SNPs')
+
+chisq.test(outlier_tab)
+# X-squared = 31.217, df = 1, p-value = 2.308e-08
+
+### Atlantic Chr08N Manhattan, with RDA results
+
+atl_gg_Chr08N_withRDA_fval <- ggplot(atl_fvals[CHR == 'Chr08N'],
+  aes(x = POS_CUM, y = EXP_FVAL)) +
+  geom_point(aes(color = PLOT_CLASS), show.legend = F) +
+  plot_class_pal +
+  ggtitle('MW8X_all exp(Fvals) for Atlantic\ninto Midwest SNPs\nChr08N') +
+  ylab('EXP(F_VAL)') +
+#  scale_x_continuous(labels = '') +
+  geom_hline(yintercept = exp(atl_outlier_cut), color = 'red',
+    linetype = 'dotted')
+
+atl_Chr08N_withRDA_man_out <- paste(out_dir,
+  'ATL_into_MW_manhattan_withRDA_Chr08N.png', sep = '')
+
+png(atl_Chr08N_withRDA_man_out, width = 480/2, height = 480)
+atl_gg_Chr08N_withRDA_fval
+dev.off()
+
+
+
+
 
 
