@@ -129,6 +129,7 @@ for CHR_NUM in {01..03};
     * NERSC: `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.txt`
   * 569 with Fst = 1
     * NERSC: `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.txt`
+
 ### LD-prune hiFst SNPs
 #### Generate sample file
 ```
@@ -137,6 +138,18 @@ cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft
 SAMP_FILE=/global/homes/g/grabowsp/tools/sg_8X/sample_sets/samp_set_files/nat_filt_v2_names.txt
 
 paste -d '\t' $SAMP_FILE $SAMP_FILE > natv2_samps.plink.txt 
+
+MW_IN=MW_firstdraft_train_filt40.txt
+MW_OUT=MW_firstdraft_train_filt40.plink.txt
+paste -d '\t' $MW_IN $MW_IN > $MW_OUT
+
+GULF_IN=GULF_firstdraft_train_filt40.txt
+GULF_OUT=GULF_firstdraft_train_filt40.plink.txt
+paste -d '\t' $GULF_IN $GULF_IN > $GULF_OUT
+
+ATL_IN=ATL_firstdraft_train_filt40.txt
+ATL_OUT=ATL_firstdraft_train_filt40.plink.txt
+paste -d '\t' $ATL_IN $ATL_IN > $ATL_OUT
 ```
 #### Generate SNP list for plink
 ```
@@ -185,22 +198,22 @@ cut -f 2 $SNP_FILE > tmp_pos.txt
 paste -d '_' tmp_chroms.txt tmp_pos.txt > $SNP_OUT
 
 ```
-#### LD-prune using plink
+#### LD-prune and filter by training set missing data using plink
 * Atlantic vs Gulf
  * Fst 0.5 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.LD.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
  * Fst 1.0 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.LD.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
 * Atlantic vs Midwest
  * Fst 0.5 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
  * Fst 1.0 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
 * Gulf vs Midwest
  * Fst 0.5 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
  * Fst 1.0 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
 
 ```
 module load python/3.7-anaconda-2019.10
@@ -212,30 +225,58 @@ cd $START_DIR
 
 OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft
 
-SAMP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/natv2_samps.plink.txt
+#SAMP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/natv2_samps.plink.txt
+
+SAMP_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/
 
 ## Atlantic vs Gulf
 # Fst_0.5
 
+cd $START_DIR
+
 SNP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.plink.txt
 
-OUT_TXT_1=AvG_Fst0.5_LD_1
-OUT_TXT_2=AvG_Fst0.5_LD_2
-OUT_TXT_3=AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.LD.txt
+ALL_SAMP_PRE=natv2_samps.plink.txt
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $SNP_FILE \
+TRAIN_SAMP_1_PRE=ATL_firstdraft_train_filt40.plink.txt
+TRAIN_SAMP_2_PRE=GULF_firstdraft_train_filt40.plink.txt
+
+ALL_SAMP_FILE=$SAMP_DIR$ALL_SAMP_PRE
+TRAIN_SAMP_1_FILE=$SAMP_DIR$TRAIN_SAMP_1_PRE
+TRAIN_SAMP_2_FILE=$SAMP_DIR$TRAIN_SAMP_2_PRE
+
+TMP_OUT_PRE=AvG
+FULL_OUT_PRE=AtlanticvsGulf
+FST=0.5
+
+#
+
+OUT_TXT_1=$TMP_OUT_PRE'_Fst'$FST'_LD_1'
+OUT_TXT_2=$TMP_OUT_PRE'_Fst'$FST'_LD_2'
+OUT_TXT_3=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_1'
+OUT_TXT_4=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_2'
+OUT_TXT_5=$FULL_OUT_PRE'_hiFst_SNPs_firstdraft_Fst'$FST'.LD.MISS.snps.txt'
+
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE --extract $SNP_FILE \
 --indep-pairwise 10 1 0.75 --out $OUT_TXT_1
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $OUT_TXT_1'.prune.in' \
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE \
+--extract $OUT_TXT_1'.prune.in' \
 --indep-pairwise 1000 100 0.99 --out $OUT_TXT_2
 
-cp $OUT_TXT_2'.prune.in' $OUT_DIR
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_1_FILE \
+--extract $OUT_TXT_2'.prune.in' --geno 0.8 --write-snplist --out $OUT_TXT_3
+
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_2_FILE \
+--extract $OUT_TXT_3'.snplist' --geno 0.8 --write-snplist --out $OUT_TXT_4
+
+cp $OUT_TXT_4'.snplist' $OUT_DIR
 
 cd $OUT_DIR
 
-cut -d '_' -f 1 $OUT_TXT_2'.prune.in' > tmp_chroms_in.txt
-cut -d '_' -f 2 $OUT_TXT_2'.prune.in' > tmp_pos_in.txt
-paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_3
+cut -d '_' -f 1 $OUT_TXT_4'.snplist' > tmp_chroms_in.txt
+cut -d '_' -f 2 $OUT_TXT_4'.snplist' > tmp_pos_in.txt
+paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_5
 
 # Fst_1.0
 
@@ -243,23 +284,36 @@ cd $START_DIR
 
 SNP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.plink.txt
 
-OUT_TXT_1=AvG_Fst1.0_LD_1
-OUT_TXT_2=AvG_Fst1.0_LD_2
-OUT_TXT_3=AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.LD.txt
+FST=1.0
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $SNP_FILE \
+#
+
+OUT_TXT_1=$TMP_OUT_PRE'_Fst'$FST'_LD_1'
+OUT_TXT_2=$TMP_OUT_PRE'_Fst'$FST'_LD_2'
+OUT_TXT_3=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_1'
+OUT_TXT_4=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_2'
+OUT_TXT_5=$FULL_OUT_PRE'_hiFst_SNPs_firstdraft_Fst'$FST'.LD.MISS.snps.txt'
+
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE --extract $SNP_FILE \
 --indep-pairwise 10 1 0.75 --out $OUT_TXT_1
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $OUT_TXT_1'.prune.in' \
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE \
+--extract $OUT_TXT_1'.prune.in' \
 --indep-pairwise 1000 100 0.99 --out $OUT_TXT_2
 
-cp $OUT_TXT_2'.prune.in' $OUT_DIR
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_1_FILE \
+--extract $OUT_TXT_2'.prune.in' --geno 0.8 --write-snplist --out $OUT_TXT_3
+
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_2_FILE \
+--extract $OUT_TXT_3'.snplist' --geno 0.8 --write-snplist --out $OUT_TXT_4
+
+cp $OUT_TXT_4'.snplist' $OUT_DIR
 
 cd $OUT_DIR
 
-cut -d '_' -f 1 $OUT_TXT_2'.prune.in' > tmp_chroms_in.txt
-cut -d '_' -f 2 $OUT_TXT_2'.prune.in' > tmp_pos_in.txt
-paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_3
+cut -d '_' -f 1 $OUT_TXT_4'.snplist' > tmp_chroms_in.txt
+cut -d '_' -f 2 $OUT_TXT_4'.snplist' > tmp_pos_in.txt
+paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_5
 
 ## Atlantic vs Midwest
 # Fst_0.5
@@ -268,23 +322,47 @@ cd $START_DIR
 
 SNP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMW_hiFst_SNPs_firstdraft_Fst0.5.plink.txt
 
-OUT_TXT_1=AvM_Fst0.5_LD_1
-OUT_TXT_2=AvM_Fst0.5_LD_2
-OUT_TXT_3=AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.txt
+ALL_SAMP_PRE=natv2_samps.plink.txt
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $SNP_FILE \
+TRAIN_SAMP_1_PRE=ATL_firstdraft_train_filt40.plink.txt
+TRAIN_SAMP_2_PRE=MW_firstdraft_train_filt40.plink.txt
+
+ALL_SAMP_FILE=$SAMP_DIR$ALL_SAMP_PRE
+TRAIN_SAMP_1_FILE=$SAMP_DIR$TRAIN_SAMP_1_PRE
+TRAIN_SAMP_2_FILE=$SAMP_DIR$TRAIN_SAMP_2_PRE
+
+TMP_OUT_PRE=AvM
+FULL_OUT_PRE=AtlanticvsMidwest
+FST=0.5
+
+# 
+
+OUT_TXT_1=$TMP_OUT_PRE'_Fst'$FST'_LD_1'
+OUT_TXT_2=$TMP_OUT_PRE'_Fst'$FST'_LD_2'
+OUT_TXT_3=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_1'
+OUT_TXT_4=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_2'
+OUT_TXT_5=$FULL_OUT_PRE'_hiFst_SNPs_firstdraft_Fst'$FST'.LD.MISS.snps.txt'
+
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE --extract $SNP_FILE \
 --indep-pairwise 10 1 0.75 --out $OUT_TXT_1
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $OUT_TXT_1'.prune.in' \
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE \
+--extract $OUT_TXT_1'.prune.in' \
 --indep-pairwise 1000 100 0.99 --out $OUT_TXT_2
 
-cp $OUT_TXT_2'.prune.in' $OUT_DIR
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_1_FILE \
+--extract $OUT_TXT_2'.prune.in' --geno 0.8 --write-snplist --out $OUT_TXT_3
+
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_2_FILE \
+--extract $OUT_TXT_3'.snplist' --geno 0.8 --write-snplist --out $OUT_TXT_4
+
+cp $OUT_TXT_4'.snplist' $OUT_DIR
 
 cd $OUT_DIR
 
-cut -d '_' -f 1 $OUT_TXT_2'.prune.in' > tmp_chroms_in.txt
-cut -d '_' -f 2 $OUT_TXT_2'.prune.in' > tmp_pos_in.txt
-paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_3
+cut -d '_' -f 1 $OUT_TXT_4'.snplist' > tmp_chroms_in.txt
+cut -d '_' -f 2 $OUT_TXT_4'.snplist' > tmp_pos_in.txt
+paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_5
 
 # Fst_1.0
 
@@ -292,23 +370,36 @@ cd $START_DIR
 
 SNP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMW_hiFst_SNPs_firstdraft_Fst1.0.plink.txt
 
-OUT_TXT_1=AvM_Fst1.0_LD_1
-OUT_TXT_2=AvM_Fst1.0_LD_2
-OUT_TXT_3=AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.txt
+FST=1.0
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $SNP_FILE \
+#
+
+OUT_TXT_1=$TMP_OUT_PRE'_Fst'$FST'_LD_1'
+OUT_TXT_2=$TMP_OUT_PRE'_Fst'$FST'_LD_2'
+OUT_TXT_3=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_1'
+OUT_TXT_4=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_2'
+OUT_TXT_5=$FULL_OUT_PRE'_hiFst_SNPs_firstdraft_Fst'$FST'.LD.MISS.snps.txt'
+
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE --extract $SNP_FILE \
 --indep-pairwise 10 1 0.75 --out $OUT_TXT_1
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $OUT_TXT_1'.prune.in' \
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE \
+--extract $OUT_TXT_1'.prune.in' \
 --indep-pairwise 1000 100 0.99 --out $OUT_TXT_2
 
-cp $OUT_TXT_2'.prune.in' $OUT_DIR
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_1_FILE \
+--extract $OUT_TXT_2'.prune.in' --geno 0.8 --write-snplist --out $OUT_TXT_3
+
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_2_FILE \
+--extract $OUT_TXT_3'.snplist' --geno 0.8 --write-snplist --out $OUT_TXT_4
+
+cp $OUT_TXT_4'.snplist' $OUT_DIR
 
 cd $OUT_DIR
 
-cut -d '_' -f 1 $OUT_TXT_2'.prune.in' > tmp_chroms_in.txt
-cut -d '_' -f 2 $OUT_TXT_2'.prune.in' > tmp_pos_in.txt
-paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_3
+cut -d '_' -f 1 $OUT_TXT_4'.snplist' > tmp_chroms_in.txt
+cut -d '_' -f 2 $OUT_TXT_4'.snplist' > tmp_pos_in.txt
+paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_5
 
 ## Gulf vs Midwest
 # Fst_0.5
@@ -317,23 +408,47 @@ cd $START_DIR
 
 SNP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMW_hiFst_SNPs_firstdraft_Fst0.5.plink.txt
 
-OUT_TXT_1=GvM_Fst0.5_LD_1
-OUT_TXT_2=GvM_Fst0.5_LD_2
-OUT_TXT_3=GulfVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.txt
+ALL_SAMP_PRE=natv2_samps.plink.txt
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $SNP_FILE \
+TRAIN_SAMP_1_PRE=GULF_firstdraft_train_filt40.plink.txt
+TRAIN_SAMP_2_PRE=MW_firstdraft_train_filt40.plink.txt
+
+ALL_SAMP_FILE=$SAMP_DIR$ALL_SAMP_PRE
+TRAIN_SAMP_1_FILE=$SAMP_DIR$TRAIN_SAMP_1_PRE
+TRAIN_SAMP_2_FILE=$SAMP_DIR$TRAIN_SAMP_2_PRE
+
+TMP_OUT_PRE=GvM
+FULL_OUT_PRE=GulfvsMidwest
+FST=0.5
+
+# 
+
+OUT_TXT_1=$TMP_OUT_PRE'_Fst'$FST'_LD_1'
+OUT_TXT_2=$TMP_OUT_PRE'_Fst'$FST'_LD_2'
+OUT_TXT_3=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_1'
+OUT_TXT_4=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_2'
+OUT_TXT_5=$FULL_OUT_PRE'_hiFst_SNPs_firstdraft_Fst'$FST'.LD.MISS.snps.txt'
+
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE --extract $SNP_FILE \
 --indep-pairwise 10 1 0.75 --out $OUT_TXT_1
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $OUT_TXT_1'.prune.in' \
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE \
+--extract $OUT_TXT_1'.prune.in' \
 --indep-pairwise 1000 100 0.99 --out $OUT_TXT_2
 
-cp $OUT_TXT_2'.prune.in' $OUT_DIR
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_1_FILE \
+--extract $OUT_TXT_2'.prune.in' --geno 0.8 --write-snplist --out $OUT_TXT_3
+
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_2_FILE \
+--extract $OUT_TXT_3'.snplist' --geno 0.8 --write-snplist --out $OUT_TXT_4
+
+cp $OUT_TXT_4'.snplist' $OUT_DIR
 
 cd $OUT_DIR
 
-cut -d '_' -f 1 $OUT_TXT_2'.prune.in' > tmp_chroms_in.txt
-cut -d '_' -f 2 $OUT_TXT_2'.prune.in' > tmp_pos_in.txt
-paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_3
+cut -d '_' -f 1 $OUT_TXT_4'.snplist' > tmp_chroms_in.txt
+cut -d '_' -f 2 $OUT_TXT_4'.snplist' > tmp_pos_in.txt
+paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_5
 
 # Fst_1.0
 
@@ -341,72 +456,37 @@ cd $START_DIR
 
 SNP_FILE=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMW_hiFst_SNPs_firstdraft_Fst1.0.plink.txt
 
-OUT_TXT_1=GvM_Fst1.0_LD_1
-OUT_TXT_2=GvM_Fst1.0_LD_2
-OUT_TXT_3=GulfVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.txt
+FST=1.0
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $SNP_FILE \
+#
+
+OUT_TXT_1=$TMP_OUT_PRE'_Fst'$FST'_LD_1'
+OUT_TXT_2=$TMP_OUT_PRE'_Fst'$FST'_LD_2'
+OUT_TXT_3=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_1'
+OUT_TXT_4=$TMP_OUT_PRE'_Fst'$FST'_LD_MISS_2'
+OUT_TXT_5=$FULL_OUT_PRE'_hiFst_SNPs_firstdraft_Fst'$FST'.LD.MISS.snps.txt'
+
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE --extract $SNP_FILE \
 --indep-pairwise 10 1 0.75 --out $OUT_TXT_1
 
-plink --bfile GW_all_samps --keep $SAMP_FILE --extract $OUT_TXT_1'.prune.in' \
+plink --bfile GW_all_samps --keep $ALL_SAMP_FILE \
+--extract $OUT_TXT_1'.prune.in' \
 --indep-pairwise 1000 100 0.99 --out $OUT_TXT_2
 
-cp $OUT_TXT_2'.prune.in' $OUT_DIR
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_1_FILE \
+--extract $OUT_TXT_2'.prune.in' --geno 0.8 --write-snplist --out $OUT_TXT_3
+
+plink --bfile GW_all_samps --keep $TRAIN_SAMP_2_FILE \
+--extract $OUT_TXT_3'.snplist' --geno 0.8 --write-snplist --out $OUT_TXT_4
+
+cp $OUT_TXT_4'.snplist' $OUT_DIR
 
 cd $OUT_DIR
 
-cut -d '_' -f 1 $OUT_TXT_2'.prune.in' > tmp_chroms_in.txt
-cut -d '_' -f 2 $OUT_TXT_2'.prune.in' > tmp_pos_in.txt
-paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_3
+cut -d '_' -f 1 $OUT_TXT_4'.snplist' > tmp_chroms_in.txt
+cut -d '_' -f 2 $OUT_TXT_4'.snplist' > tmp_pos_in.txt
+paste tmp_chroms_in.txt tmp_pos_in.txt > $OUT_TXT_5
 
 ```
 
-## Filter by missing data
-# Test this interactively - should work, but will take some time
-```
-module load python/3.7-anaconda-2019.07
-source activate /global/homes/g/grabowsp/.conda/envs/gen_bioinformatics
-
-OUT_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/
-
-cd $OUT_DIR
-
-VCF_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/all_samp_disomic_vcfs/
-VCF_PRE=Chr
-VCF_SUF=.disomic.CDS.allsamps.vcf.gz
-
-SAMP_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/
-ATLANTIC_FILE=ATL_firstdraft_train_filt40.txt
-GULF_FILE=GULF_firstdraft_train_filt40.txt
-MW_FILE=MW_firstdraft_train_filt40.txt
-
-SNP_DIR=/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/
-
-MISS_CUT=0.8
-SNP_FILE_IN=$SNP_DIR'AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.LD.txt'
-OUT_TXT_PRE=AvG_Chr
-OUT_TXT_SUB=_Fst0.5_LD
-SAMP_FILE_1=$SAMP_DIR$ATLANTIC_FILE
-SAMP_FILE_2=$SAMP_DIR$GULF_FILE;
-
-for CHR_NUM in {01..03};
-  do
-  for CHR_LET in K N;
-    do
-    VCF_FULL=$VCF_DIR$VCF_PRE$CHR_NUM$CHR_LET$VCF_SUF;
-    #
-    OUT_TXT_1=$OUT_TXT_PRE$CHR_NUM$CHR_LET$OUT_TXT_SUB'.tmp';
-    #
-    vcftools --gzvcf $VCF_FULL --out $OUT_TXT_1 --positions $SNP_FILE_IN \
-      --max-missing $MISS_CUT --keep $SAMP_FILE_1 --kept-sites;
-    #
-    OUT_TXT_2=$OUT_TXT_PRE$CHR_NUM$CHR_LET$OUT_TXT_SUB'.filt';
-    SNP_FILE_2=$OUT_TXT_1'.kept.sites';
-    #
-    vcftools --gzvcf $VCF_FULL --out $OUT_TXT_2 --positions $SNP_FILE_2 \
-      --max-missing $MISS_CUT --keep $SAMP_FILE_2 --kept-sites;
-    done;
-  done;
-
-```
 
