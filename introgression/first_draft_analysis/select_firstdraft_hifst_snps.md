@@ -130,8 +130,8 @@ for CHR_NUM in {01..03};
   * 569 with Fst = 1
     * NERSC: `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.txt`
 
-### LD-prune hiFst SNPs
-#### Generate sample file
+## LD-prune hiFst SNPs and filter by missing data in trainin sets
+### Generate sample file
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft
 
@@ -151,7 +151,7 @@ ATL_IN=ATL_firstdraft_train_filt40.txt
 ATL_OUT=ATL_firstdraft_train_filt40.plink.txt
 paste -d '\t' $ATL_IN $ATL_IN > $ATL_OUT
 ```
-#### Generate SNP list for plink
+### Generate SNP list for plink
 ```
 cd /global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft
 
@@ -198,23 +198,25 @@ cut -f 2 $SNP_FILE > tmp_pos.txt
 paste -d '_' tmp_chroms.txt tmp_pos.txt > $SNP_OUT
 
 ```
-#### LD-prune and filter by training set missing data using plink
+### Run LD-prune and missing data filtering in plink 
+#### File locations
 * Atlantic vs Gulf
  * Fst 0.5 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticvsGulf_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
  * Fst 1.0 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsGulf_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticvsGulf_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
 * Atlantic vs Midwest
  * Fst 0.5 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticvsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
  * Fst 1.0 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/AtlanticvsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
 * Gulf vs Midwest
  * Fst 0.5 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfvsMidwest_hiFst_SNPs_firstdraft_Fst0.5.LD.MISS.snps.txt`
  * Fst 1.0 LD-pruned file:
-  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfVsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
+  * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/GulfvsMidwest_hiFst_SNPs_firstdraft_Fst1.0.LD.MISS.snps.txt`
 
+#### Run commands
 ```
 module load python/3.7-anaconda-2019.10
 source activate plink_1_env
