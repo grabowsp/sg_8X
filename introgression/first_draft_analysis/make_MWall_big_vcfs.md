@@ -1,5 +1,11 @@
 # Generate VCFs for MWall sample set
 
+## Location of final files
+* NERSC:
+ * `/global/cscratch1/sd/grabowsp/sg_8X_scratch/introgression_files/firstdraft/MWall_big_vcfs`
+* HAIB:
+ * `/home/f1p1/tmp/switchgrass_8X/MWall_big_vcfs`
+
 ## Generate VCFs
 ```
 module load python/3.7-anaconda-2019.07
