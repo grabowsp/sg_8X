@@ -18,6 +18,8 @@
  * `/home/f2p1/work/grabowsk/data/switchgrass/PlantGroup_presentation_July2021/MW8X_introgressed_names.txt`
 * MW_Low_introgression_samps
  * `/home/f2p1/work/grabowsk/data/switchgrass/PlantGroup_presentation_July2021/MW_no_introgress_names.txt`
+* MW_4X_samps
+ * `/home/f2p1/work/grabowsk/data/switchgrass/PlantGroup_presentation_July2021/MW_4X_names.txt`
 
 ## Test with AvM hiFst SNPs
 ```
